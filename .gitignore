@@ -1,0 +1,29 @@
+# Ambiente virtual Python
+venv/
+
+# Arquivos de configuração de ambiente
+.env
+.env.*
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Diretórios de IDE/Editor
+.vscode/
+.idea/
+
+# Outros arquivos temporários
+*.log
+.DS_Store
+Thumbs.db
+
+# Testes
+.coverage
+htmlcov/
+
+# Arquivos de sistema
+*.swp
+*.swo
