@@ -3,6 +3,57 @@
 Chatbot que escuta eventos de campanhas via Redis e envia mensagens WhatsApp
 para doadores cadastrados usando Twilio + WhatsApp Business API.
 
+## Como rodar o chatbot do zero (passo a passo para novos usuários)
+
+1. **Clone o repositório:**
+
+   ```bash
+   git clone https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git
+   cd NOME_DO_REPOSITORIO
+   ```
+
+2. **Crie e ative um ambiente virtual Python:**
+
+   ```bash
+   python -m venv venv
+   # No Windows:
+   venv\Scripts\activate
+   # No Linux/Mac:
+   source venv/bin/activate
+   ```
+
+3. **Instale as dependências:**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure as variáveis de ambiente:**
+
+   ```bash
+   cp env.example .env
+   # Edite o .env com as credenciais do Twilio e Redis
+   ```
+
+5. **Suba o Redis localmente (se necessário):**
+
+   ```bash
+   docker run -d -p 6379:6379 redis:alpine
+   ```
+
+6. **Rode o chatbot:**
+
+   ```bash
+   python main.py
+   ```
+
+7. **Simule um evento de campanha (opcional, para testes):**
+   ```bash
+   python test_publish_event.py
+   ```
+
+Pronto! O chatbot estará funcionando e pronto para receber eventos de campanhas.
+
 ## Estrutura
 
 ```
@@ -33,6 +84,7 @@ cp .env.example .env
 ```
 
 Onde encontrar cada valor no painel do Twilio:
+
 - `TWILIO_ACCOUNT_SID` e `TWILIO_AUTH_TOKEN`: https://console.twilio.com (página inicial)
 - `TWILIO_WHATSAPP_NUMBER`: Messaging > Senders (sandbox: +14155238886)
 - `TWILIO_CONTENT_SID`: Messaging > Content Template Builder > clique no template criado
@@ -93,14 +145,15 @@ Sistema de Doações
 
 ## Transição Sandbox → Produção
 
-| Etapa | Sandbox | Produção |
-|---|---|---|
-| Número de envio | +14155238886 (fixo Twilio) | Seu número aprovado pela Meta |
-| Template | Não precisa aprovação | Precisa aprovação da Meta |
-| Destinatários | Só quem "joinnou" o sandbox | Qualquer número |
-| Custo | Gratuito | Por conversa (Meta) |
+| Etapa           | Sandbox                     | Produção                      |
+| --------------- | --------------------------- | ----------------------------- |
+| Número de envio | +14155238886 (fixo Twilio)  | Seu número aprovado pela Meta |
+| Template        | Não precisa aprovação       | Precisa aprovação da Meta     |
+| Destinatários   | Só quem "joinnou" o sandbox | Qualquer número               |
+| Custo           | Gratuito                    | Por conversa (Meta)           |
 
 Para produzir, basta:
+
 1. Registrar seu número como WhatsApp Business Sender no Twilio
 2. Submeter o template para aprovação (`Save and Submit for WhatsApp Approval`)
 3. Atualizar `TWILIO_WHATSAPP_NUMBER` no `.env`
