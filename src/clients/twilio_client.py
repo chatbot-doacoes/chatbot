@@ -7,6 +7,7 @@ class Twilio:
         self.logger = logger
         self.from_number = self._format_whatsapp_number(Environment.get("TWILIO_WHATSAPP_FROM"))
         try:
+            self.logger.add_step("Trying to connect to Twilio.")
             self.client = Client(
                 username=Environment.get("TWILIO_ACCOUNT_SID"),
                 password=Environment.get("TWILIO_AUTH_TOKEN"),
@@ -20,6 +21,7 @@ class Twilio:
 
     def send_whatsapp_message(self, to_number: str, message: str):
         try:
+            self.logger.add_step(f"Trying to send WhatsApp message.")
             self.client.messages.create(
                 from_=self.from_number,
                 to=self._format_whatsapp_number(to_number),
