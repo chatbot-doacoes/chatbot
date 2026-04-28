@@ -1,8 +1,9 @@
 import json
 
 from src.utils.logger import Logger
+from src.config.environment import Environment
 import redis
-import os
+
 
 class Redis:
 
@@ -14,10 +15,10 @@ class Redis:
             # Validar com o Victor como será feita a conexão
             # redis.Redis.from_url(os.getenv("REDIS_URL"))
             Redis.client_instance = redis.Redis(
-                host=os.getenv("REDIS_HOST", "localhost"),
-                port=int(os.getenv("REDIS_PORT", 6379)),
-                username=os.getenv("REDIS_USERNAME"),
-                password=os.getenv("REDIS_PASSWORD"),
+                host=Environment.get("REDIS_HOST"),
+                port=int(Environment.get("REDIS_PORT")),
+                username=Environment.get("REDIS_USERNAME"),
+                password=Environment.get("REDIS_PASSWORD"),
                 decode_responses=True
             )
 
