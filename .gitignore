@@ -5,6 +5,9 @@ venv/
 .env
 .env.*
 
+# Pipenv
+Pipfile.lock
+
 # Cache do Python
 __pycache__/
 *.pyc
