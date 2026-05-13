@@ -7,4 +7,3 @@ class Institutions(StrEnum):
     KEY_HASH = "key_hash"
     IS_ACTIVE = "is_active"
     CREATED_AT = "created_at"
-    INSTITUTION_ID = "institution_id"
