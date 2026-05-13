@@ -1,5 +1,6 @@
 import json
 import os
+import hashlib
 from typing import Dict, Any
 
 def get_message_template(donation_type: str) -> Dict[str, Any]:
@@ -11,4 +12,6 @@ def get_message_template(donation_type: str) -> Dict[str, Any]:
         templates = json.load(f)
 
     return templates.get("donation_type", {}).get(donation_type, {})
-    
+
+def hash_api_key(api_key: str) -> str:
+    return hashlib.sha256(api_key.encode("utf-8")).hexdigest()

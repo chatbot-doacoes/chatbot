@@ -4,16 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-twilio = "9.10.5"
+twilio = "9.10.9"
 python-dotenv = "1.2.2"
 fastapi = "0.136.1"
 uvicorn = "0.46.0"
+supabase = "2.30.0"
 
 [dev-packages]
 
 [scripts]
 api = "uvicorn src.api.app:app --reload"
 
-
 [requires]
-python_version = "3.14"
+python_version = "3.13"
