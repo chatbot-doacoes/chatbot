@@ -2,6 +2,7 @@ import json
 import logging
 from typing import TypedDict, List, Dict, Any
 import uuid
+from datetime import datetime, timezone
 
 from src.enum.status_enum import StatusEnum
 
@@ -19,6 +20,7 @@ class Logger:
     def _reset_state(self) -> None:
         self.final_log: LogData = {
             "request_id": str(uuid.uuid4()),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "status": "",
             "steps": [],
             "metadata": {}
