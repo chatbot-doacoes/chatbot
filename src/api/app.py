@@ -2,11 +2,15 @@ from fastapi import Depends, FastAPI
 
 from src.api.dependencies.validations import ValidationsDependencies
 from src.api.middlewares.ip_allowlist import set_ip_allowlist
+from src.api.middlewares.request_context import set_request_context
+from src.api.middlewares.logging_middleware import set_logging_middleware
 from src.api.payloads.messages import MessagesPayload
 from src.clients.supabase_client import Supabase
 from src.utils.logger import Logger
 
 app = FastAPI(title="Chatbot API")
+set_logging_middleware(app)
+set_request_context(app)
 set_ip_allowlist(app)
 
 logger = Logger()
