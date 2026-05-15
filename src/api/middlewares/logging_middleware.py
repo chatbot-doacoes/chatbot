@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from time import perf_counter
+import traceback
 
 from src.utils.logger import Logger
 from src.enum.status_enum import StatusEnum
@@ -37,13 +38,20 @@ def set_logging_middleware(app: FastAPI) -> None:
                 duration_ms=round(duration * 1000, 2),
             )
 
-            logger.generate_log(StatusEnum.SUCCESS)
+            if response.status_code >= 400:
+                logger.generate_log(StatusEnum.ERROR)
+            else:
+                logger.generate_log(StatusEnum.SUCCESS)
 
             return response
 
         except Exception as e:
 
             logger.add_step(f"Unhandled exception: {str(e)}")
+
+            logger.add_to_final_log(
+                traceback=traceback.format_exc()
+            )
 
             logger.generate_log(StatusEnum.ERROR)
 

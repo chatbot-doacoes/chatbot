@@ -8,6 +8,8 @@ from src.api.payloads.messages import MessagesPayload
 from src.clients.supabase_client import Supabase
 from src.utils.logger import Logger
 
+import time
+
 app = FastAPI(title="Chatbot API")
 set_logging_middleware(app)
 set_request_context(app)
@@ -26,6 +28,13 @@ def send_messages(
         payload: MessagesPayload,
         _: None = Depends(validation_dependencies.verify_api_key)) -> dict:
     return {"status": "ok", "message": payload.message}
+
+@app.post("/slow")
+def slow():
+
+    time.sleep(5)
+
+    return {"status": "ok"}
 
 # IMPLEMENTAR ENDPOINT DE USO INTERNO PARA CADASTRAR NOVAS INSTITUIÇÕES
 
