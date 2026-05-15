@@ -2,7 +2,7 @@ import json
 import logging
 from typing import TypedDict, List, Dict, Any
 
-from src.enum.StatusEnum import StatusEnum
+from src.enum.status_enum import StatusEnum
 
 class LogData(TypedDict):
     status: str

@@ -1,0 +1,31 @@
+{
+    "donation_type": {
+        "diapers": {
+            "message": [
+                "Oi, {name}! Esperamos que esteja tudo bem.",
+                "Estamos entrando em contato para compartilhar uma necessidade da instituição {institution}: no momento, estamos precisando de fraldas para os bebês e crianças que apoiamos.",
+                "Sua doação faria uma grande diferença para as famílias que atendemos.",
+                "Qualquer contribuição é muito bem-vinda, seja com fraldas ou outros itens.",
+                "Agradecemos de coração por seu apoio e generosidade!"
+            ]
+        },
+        "clothes": {
+            "message": [
+                "Olá, {name}! Como você está?",
+                "A instituição {institution} está organizando uma campanha para arrecadar roupas em bom estado para as famílias da nossa comunidade.",
+                "Se você tiver peças que não usa mais e que possam aquecer alguém, sua doação será recebida com muita gratidão.",
+                "Lembre-se que toda ajuda é importante, independentemente do tipo de doação.",
+                "Muito obrigado por sua atenção e por considerar nosso pedido!"
+            ]
+        },
+        "food_supplies": {
+            "message": [
+                "Oi, {name}, tudo bem por aí?",
+                "Gostaríamos de compartilhar um de nossos desafios atuais na instituição {institution}: estamos precisando de alimentos não perecíveis para garantir a segurança alimentar das famílias que assistimos.",
+                "Cada item doado nos ajuda a compor cestas básicas que fazem a diferença na vida de muitas pessoas.",
+                "Sinta-se à vontade para contribuir como puder. Toda ajuda é valiosa para nós.",
+                "Agradecemos imensamente por seu apoio contínuo!"
+            ]
+        }
+    }
+}
