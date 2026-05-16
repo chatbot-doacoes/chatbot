@@ -11,7 +11,7 @@ from src.utils.utils import api_response
 app = FastAPI(title="Chatbot API")
 set_ip_allowlist(app)
 
-app.include_router(internal_router)
+app.include_router(internal_router, include_in_schema=False)
 app.include_router(public_router)
 
 @app.exception_handler(APIException)

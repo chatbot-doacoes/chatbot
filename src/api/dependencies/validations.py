@@ -7,11 +7,12 @@ from src.config.environment import Environment
 from src.utils.logger import Logger
 from src.utils.utils import hash_api_key
 
+INTERNAL_API_KEY = "INTERNAL_API_KEY"
 
-external_api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
-internal_api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
+external_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
+internal_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
 
-def verify_external_api_key(api_key: str | None = Security(external_api_key_header)):
+def verify_external_api_key(api_key: str | None = Security(external_api_key_header)) -> None:
     # Revisar esse fluxo de logs...
     logger = Logger()
     supabase_client = Supabase(logger)
@@ -30,14 +31,14 @@ def verify_external_api_key(api_key: str | None = Security(external_api_key_head
             message="This API Key is not registered",
         )
 
-def verify_internal_api_key(api_key: str | None = Security(internal_api_key_header)):
+def verify_internal_api_key(api_key: str | None = Security(internal_api_key_header)) -> None:
     if not api_key:
         raise APIException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             message="API Key is missing",
         )
 
-    if hash_api_key(api_key) != Environment.get("INTERNAL_API_KEY"):
+    if hash_api_key(api_key) != Environment.get(INTERNAL_API_KEY):
         raise APIException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             message="This API Key is not registered",
