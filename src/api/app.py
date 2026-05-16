@@ -1,44 +1,33 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI, status, Request
+from fastapi.responses import JSONResponse
 
-from src.api.dependencies.validations import ValidationsDependencies
 from src.api.middlewares.ip_allowlist import set_ip_allowlist
 from src.api.middlewares.request_context import set_request_context
 from src.api.middlewares.logging_middleware import set_logging_middleware
-from src.api.payloads.messages import MessagesPayload
-from src.clients.supabase_client import Supabase
-from src.utils.logger import Logger
-
-import time
+from src.api.public.router import public_router
+from src.api.internal.router import internal_router
+from src.api.exceptions import APIException
+from src.utils.utils import api_response
 
 app = FastAPI(title="Chatbot API")
 set_logging_middleware(app)
 set_request_context(app)
 set_ip_allowlist(app)
 
-logger = Logger()
+app.include_router(internal_router, include_in_schema=False)
+app.include_router(public_router)
 
-supabase_client = Supabase(logger=logger)
+@app.exception_handler(APIException)
+def api_exception_handler(request: Request, exc: APIException) -> JSONResponse:
+    return api_response(
+        status_code=exc.status_code,
+        message=exc.message,
+    )
 
-validation_dependencies = ValidationsDependencies(
-    supabase=supabase_client,
-)
+@app.get("/health-check")
+def health_check() -> JSONResponse:
+    return api_response(
+        status_code=status.HTTP_200_OK,
+        message="The service is healthy!"
+    )
 
-@app.post("/send-messages")
-def send_messages(
-        payload: MessagesPayload,
-        _: None = Depends(validation_dependencies.verify_api_key)) -> dict:
-    return {"status": "ok", "message": payload.message}
-
-# IMPLEMENTAR ENDPOINT DE USO INTERNO PARA CADASTRAR NOVAS INSTITUIÇÕES
-
-# IMPLEMENTAR ENDPOINT DE USO INTERNO PARA RETORNAR TODAS AS INSTITUIÇÕES CADASTRADAS
-
-# IMPLEMENTAR ENDPOINT DE USO INTERNO PARA DELEÇÃO DE INSTITUIÇÕES CADASTRADAS
-
-# IMPLEMENTAR ENDPOINT DE USO INTERNO PARA CRIAÇÃO DE NOVAS MENSAGENS
-
-# IMPLEMENTAR ENDPOINT DE USO INTERNO PARA RETORNAR TODAS AS MENSAGENS
-
-# IMPLEMENTAR ENDPOINT DE USO INTERNO PARA DELEÇÃO DE MENSAGENS
-
-# (OPCIONAL) IMPLEMENTAR ENDPOINT PARA ALTERAÇÃO DE MENSAGENS E INSTITUIÇÕES

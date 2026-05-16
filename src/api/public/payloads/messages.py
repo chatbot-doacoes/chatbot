@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
 
-class MessagesPayload(BaseModel):
+class SendMessages(BaseModel):
     message: str
 
