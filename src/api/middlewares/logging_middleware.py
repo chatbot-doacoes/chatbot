@@ -29,6 +29,10 @@ def set_logging_middleware(app: FastAPI) -> None:
             path=request.url.path,
         )
 
+        # Armazena o contexto do log da request atual para permitir
+        # enriquecimento do log em outras camadas da aplicação.
+        request.state.log_data = log_data
+
         logger.add_step(log_data, "Request started")
 
         try:
