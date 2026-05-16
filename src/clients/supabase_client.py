@@ -23,7 +23,7 @@ class Supabase:
             response = self.client.table(table_name).insert(data).execute()
             return bool(getattr(response, "data", None))
         except Exception as e:
-            raise e
+            raise False
 
     def register_institution(self, data: dict) -> bool:
         return self._create_record(
@@ -51,4 +51,4 @@ class Supabase:
             key_hashes_cache.set(KEY_HASHES_LIST, key_hashes_list)
             return key_hash in key_hashes_list
         except Exception as e:
-            raise e
+            raise False

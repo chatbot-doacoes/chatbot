@@ -2,7 +2,6 @@ from fastapi import FastAPI, status, Request
 from fastapi.responses import JSONResponse
 
 from src.api.middlewares.ip_allowlist import set_ip_allowlist
-from src.api.middlewares.request_context import set_request_context
 from src.api.middlewares.logging_middleware import set_logging_middleware
 from src.api.public.router import public_router
 from src.api.internal.router import internal_router
@@ -11,7 +10,6 @@ from src.utils.utils import api_response
 
 app = FastAPI(title="Chatbot API")
 set_logging_middleware(app)
-set_request_context(app)
 set_ip_allowlist(app)
 
 app.include_router(internal_router, include_in_schema=False)

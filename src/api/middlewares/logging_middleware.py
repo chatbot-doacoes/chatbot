@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request
 from time import perf_counter
-from datetime import datetime, timezone
-import traceback
+import uuid
 
 from src.utils.logger import Logger
 from src.enum.status_enum import StatusEnum
@@ -20,20 +19,17 @@ def set_logging_middleware(app: FastAPI) -> None:
 
         start_time = perf_counter()
 
-        request_id = getattr(request.state, "request_id", "")
+        request_id = str(uuid.uuid4())
 
-        log_data = {
-            "request_id": request_id,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "status": "",
-            "steps": [],
-            "metadata": {
-                "method": request.method,
-                "path": request.url.path,
-            }
-        }
+        request.state.request_id = request_id
 
-        log_data["steps"].append("Request started")
+        log_data = logger.create_log(
+            request_id=request_id,
+            method=request.method,
+            path=request.url.path,
+        )
+
+        logger.add_step(log_data, "Request started")
 
         try:
 
@@ -41,30 +37,34 @@ def set_logging_middleware(app: FastAPI) -> None:
 
             duration = perf_counter() - start_time
 
-            log_data["steps"].append("Request finished")
+            logger.add_step(log_data, "Request finished")
 
-            log_data["metadata"]["status_code"] = response.status_code
-
-            log_data["metadata"]["duration_ms"] = round(duration * 1000, 2)
+            logger.add_metadata(
+                log_data,
+                status_code=response.status_code,
+                duration_ms=round(duration * 1000, 2),
+            )
 
             if response.status_code >= 400:
-                log_data["status"] = StatusEnum.ERROR
+                logger.set_status(log_data, StatusEnum.ERROR)
             else:
-                log_data["status"] = StatusEnum.SUCCESS
+                logger.set_status(log_data, StatusEnum.SUCCESS)
 
             logger.generate_log(log_data)
 
             return response
 
-        except Exception as e:
+        except Exception:
 
-            log_data["steps"].append(
-                f"Unhandled exception: {str(e)}"
+            logger.add_step(
+                log_data,
+                "Unhandled internal exception"
             )
 
-            log_data["metadata"]["traceback"] = traceback.format_exc()
-
-            log_data["status"] = StatusEnum.ERROR
+            logger.set_status(
+                log_data,
+                StatusEnum.ERROR
+            )
 
             logger.generate_log(log_data)
 
