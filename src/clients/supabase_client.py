@@ -2,10 +2,13 @@ from supabase import Client, create_client
 from src.utils.logger import Logger
 from src.config.environment import Environment
 from src.utils.ttl_cache import TTLCache
-from src.enum.schema_enum import Institutions
+from src.models.institution import InstitutionModel
 
-key_hashes_cache = TTLCache(ttl_seconds=300) # 5 Minutes
+TABLE_INSTITUTIONS = "institutions"
+
+key_hashes_cache = TTLCache(ttl_seconds=300)
 KEY_HASHES_LIST = "key_hashes_list"
+
 
 class Supabase:
     def __init__(self, logger: Logger):
@@ -28,10 +31,10 @@ class Supabase:
             self.logger.add_step(f"Failed to insert record into '{table_name}': {str(e)}")
             return False
 
-    def register_institution(self, data: dict) -> bool:
+    def register_institution(self, model: InstitutionModel) -> bool:
         return self._create_record(
-            table_name=Institutions.TABLE,
-            data=data,
+            table_name=TABLE_INSTITUTIONS,
+            data=model.to_insert_dict(),
         )
 
     def is_institution_registered(self, key_hash: str) -> bool:
@@ -42,16 +45,16 @@ class Supabase:
         try:
             self.logger.add_step("Trying to get key hashes from Supabase.")
             response = (
-                self.client.table(Institutions.TABLE)
-                .select(Institutions.KEY_HASH)
-                .eq(Institutions.IS_ACTIVE, True)
+                self.client.table(TABLE_INSTITUTIONS)
+                .select("key_hash")
+                .eq("is_active", True)
                 .execute()
             )
             data = getattr(response, "data", None)
             if not data or not isinstance(data, list):
                 return False
 
-            key_hashes_list = [row[Institutions.KEY_HASH] for row in data]
+            key_hashes_list = [row["key_hash"] for row in data]
             key_hashes_cache.set(KEY_HASHES_LIST, key_hashes_list)
             return key_hash in key_hashes_list
         except Exception as e:
