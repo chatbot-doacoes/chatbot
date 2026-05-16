@@ -29,13 +29,6 @@ def send_messages(
         _: None = Depends(validation_dependencies.verify_api_key)) -> dict:
     return {"status": "ok", "message": payload.message}
 
-@app.post("/slow")
-def slow():
-
-    time.sleep(5)
-
-    return {"status": "ok"}
-
 # IMPLEMENTAR ENDPOINT DE USO INTERNO PARA CADASTRAR NOVAS INSTITUIÇÕES
 
 # IMPLEMENTAR ENDPOINT DE USO INTERNO PARA RETORNAR TODAS AS INSTITUIÇÕES CADASTRADAS
