@@ -5,7 +5,12 @@ from datetime import datetime, timezone
 
 class Logger:
 
-    def __init__(self):
+    def __init__(
+        self,
+        request_id: str,
+        method: str,
+        path: str
+    ):
 
         logging.basicConfig(
             level=logging.INFO,
@@ -14,14 +19,7 @@ class Logger:
 
         self.logger = logging.getLogger(__name__)
 
-    def create_log(
-        self,
-        request_id: str,
-        method: str,
-        path: str
-    ) -> dict:
-
-        return {
+        self.log_data = {
             "request_id": request_id,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "status": "",
@@ -34,31 +32,25 @@ class Logger:
 
     def add_step(
         self,
-        log_data: dict,
         step: str
     ) -> None:
 
-        log_data["steps"].append(step)
+        self.log_data["steps"].append(step)
 
     def add_metadata(
         self,
-        log_data: dict,
         **data
     ) -> None:
 
-        log_data["metadata"].update(data)
+        self.log_data["metadata"].update(data)
 
     def set_status(
         self,
-        log_data: dict,
         status: str
     ) -> None:
 
-        log_data["status"] = status
+        self.log_data["status"] = status
 
-    def generate_log(
-        self,
-        log_data: dict
-    ) -> None:
+    def generate_log(self) -> None:
 
-        self.logger.info(json.dumps(log_data))
+        self.logger.info(json.dumps(self.log_data))

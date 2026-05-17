@@ -16,14 +16,15 @@ class Supabase:
                 supabase_key=Environment.get("SUPABASE_SECRET_API_KEY")
             )
         except Exception as e:
-            raise e
+            self.logger.add_step(f"Failed to create Supabase client: {str(e)}")
 
     def _create_record(self, table_name: str, data: dict) -> bool:
         try:
             response = self.client.table(table_name).insert(data).execute()
             return bool(getattr(response, "data", None))
         except Exception as e:
-            raise False
+            self.logger.add_step(f"Failed to create record in {table_name}: {str(e)}")
+            return False
 
     def register_institution(self, data: dict) -> bool:
         return self._create_record(
@@ -51,4 +52,5 @@ class Supabase:
             key_hashes_cache.set(KEY_HASHES_LIST, key_hashes_list)
             return key_hash in key_hashes_list
         except Exception as e:
-            raise False
+            self.logger.add_step(f"Failed to check institution registration: {str(e)}")
+            return False
