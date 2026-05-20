@@ -1,34 +1,56 @@
 import json
 import logging
-from typing import TypedDict, List, Dict, Any
+from datetime import datetime, timezone
 
-from src.enum.status_enum import StatusEnum
-
-class LogData(TypedDict):
-    status: str
-    steps: List[str]
-    metadata: Dict[str, Any]
 
 class Logger:
-    def __init__(self):
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
-        self._reset_state()
 
-    def _reset_state(self) -> None:
-        self.final_log: LogData = {
+    def __init__(
+        self,
+        request_id: str,
+        method: str,
+        path: str
+    ):
+
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(message)s"
+        )
+
+        self.logger = logging.getLogger(__name__)
+
+        self.log_data = {
+            "request_id": request_id,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "status": "",
             "steps": [],
-            "metadata": {}
+            "metadata": {
+                "method": method,
+                "path": path,
+            }
         }
 
-    def add_step(self, step: str) -> None:
-        self.final_log["steps"].append(step)
+    def add_step(
+        self,
+        step: str
+    ) -> None:
 
-    def add_to_final_log(self, **data) -> None:
-        self.final_log["metadata"].update(data)
+        self.log_data["steps"].append(step)
 
-    def generate_log(self, status: StatusEnum) -> None:
-        self.final_log["status"] = status
-        self.logger.info(json.dumps(self.final_log))
-        self._reset_state()
+    def add_metadata(
+        self,
+        **data
+    ) -> None:
+
+        self.log_data["metadata"].update(data)
+
+    def set_status(
+        self,
+        status: str
+    ) -> None:
+
+        self.log_data["status"] = status
+
+    def generate_log(self) -> None:
+
+        self.logger.info(json.dumps(self.log_data))

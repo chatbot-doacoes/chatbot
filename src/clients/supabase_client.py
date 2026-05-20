@@ -11,7 +11,6 @@ class Supabase:
     def __init__(self, logger: Logger):
         self.logger = logger
         try:
-            self.logger.add_step("Trying to connect to Supabase.")
             self.client: Client = create_client(
                 supabase_url=Environment.get("SUPABASE_URL"),
                 supabase_key=Environment.get("SUPABASE_SECRET_API_KEY")
@@ -21,11 +20,10 @@ class Supabase:
 
     def _create_record(self, table_name: str, data: dict) -> bool:
         try:
-            self.logger.add_step(f"Trying to insert record into '{table_name}'.")
             response = self.client.table(table_name).insert(data).execute()
             return bool(getattr(response, "data", None))
         except Exception as e:
-            self.logger.add_step(f"Failed to insert record into '{table_name}': {str(e)}")
+            self.logger.add_step(f"Failed to create record in {table_name}: {str(e)}")
             return False
 
     def register_institution(self, data: dict) -> bool:
@@ -40,7 +38,6 @@ class Supabase:
             return key_hash in key_hashes_list
 
         try:
-            self.logger.add_step("Trying to get key hashes from Supabase.")
             response = (
                 self.client.table(Institutions.TABLE)
                 .select(Institutions.KEY_HASH)
@@ -55,5 +52,5 @@ class Supabase:
             key_hashes_cache.set(KEY_HASHES_LIST, key_hashes_list)
             return key_hash in key_hashes_list
         except Exception as e:
-            self.logger.add_step(f"Failed to get key hashes from Supabase: {str(e)}")
+            self.logger.add_step(f"Failed to check institution registration: {str(e)}")
             return False
