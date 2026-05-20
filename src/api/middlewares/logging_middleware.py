@@ -20,8 +20,6 @@ def set_logging_middleware(app: FastAPI) -> None:
 
         request_id = str(uuid.uuid4())
 
-        request.state.request_id = request_id
-
         logger = Logger(
             request_id=request_id,
             method=request.method,
