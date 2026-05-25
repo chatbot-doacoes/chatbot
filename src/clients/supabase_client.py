@@ -4,7 +4,6 @@ from src.config.environment import Environment
 from src.utils.ttl_cache import TTLCache
 from src.models.institution import InstitutionModel
 
-TABLE_INSTITUTIONS = "institutions"
 
 key_hashes_cache = TTLCache(ttl_seconds=300)
 KEY_HASHES_LIST = "key_hashes_list"
@@ -33,7 +32,7 @@ class Supabase:
 
     def register_institution(self, model: InstitutionModel) -> bool:
         return self._create_record(
-            table_name=TABLE_INSTITUTIONS,
+            table_name=InstitutionModel.TABLE_NAME,
             data=model.to_insert_dict(),
         )
 
@@ -45,17 +44,19 @@ class Supabase:
         try:
             self.logger.add_step("Trying to get key hashes from Supabase.")
             response = (
-                self.client.table(TABLE_INSTITUTIONS)
-                .select("key_hash")
-                .eq("is_active", True)
+                self.client.table(InstitutionModel.TABLE_NAME)
+                .select("*")
+                .eq(InstitutionModel.Cols.is_active, True)
                 .execute()
             )
             data = getattr(response, "data", None)
             if not data or not isinstance(data, list):
                 return False
 
-            key_hashes_list = [row["key_hash"] for row in data]
+            institutions = [InstitutionModel.model_validate(row) for row in data]
+            key_hashes_list = [inst.key_hash for inst in institutions]
             key_hashes_cache.set(KEY_HASHES_LIST, key_hashes_list)
+            
             return key_hash in key_hashes_list
         except Exception as e:
             self.logger.add_step(f"Failed to get key hashes from Supabase: {str(e)}")
