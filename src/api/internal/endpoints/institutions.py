@@ -1,9 +1,8 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Request, status
 from src.api.internal.responses.institutions import GetAllInstitutionsResponse
 from src.api.internal.payloads.institutions import RegisterInstitution
 from src.utils.utils import api_response
 from src.clients.supabase_client import Supabase
-from src.utils.logger import Logger
 
 router = APIRouter()
 
@@ -16,9 +15,8 @@ def send_message(payload:RegisterInstitution):
 
 
 @router.get("/institutions", response_model=GetAllInstitutionsResponse)
-def get_institutions() -> GetAllInstitutionsResponse:
-    logger = Logger()
-    supabase_client = Supabase(logger)
+def get_institutions(request: Request) -> GetAllInstitutionsResponse:
+    supabase_client = Supabase(request.state.logger)
 
     institutions = supabase_client.get_institutions()
 
