@@ -70,3 +70,16 @@ class Supabase:
         if not data or not isinstance(data, list):
             return []
         return [InstitutionModel.model_validate(row) for row in data]
+    
+    def update_institution(self, institution_id: str, data: dict) -> InstitutionModel:
+        self.logger.add_step(f"Trying to update institution '{institution_id}'.")
+        response = (
+            self.client.table(InstitutionModel.TABLE_NAME)
+            .update(data)
+            .eq(InstitutionModel.Cols.id, institution_id)
+            .execute()
+        )
+        result = getattr(response, "data", None)
+        if not result or not isinstance(result, list):
+            raise Exception(f"Institution '{institution_id}' not found")
+        return InstitutionModel.model_validate(result[0])
