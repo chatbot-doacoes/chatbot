@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
-from src.models.institution import InstitutionModel
-from src.api.internal.payloads.institutions import RegisterInstitution, InstitutionResponse
+from src.api.internal.responses.institutions import GetAllInstitutionsResponse
+from src.api.internal.payloads.institutions import RegisterInstitution
 from src.utils.utils import api_response
 from src.clients.supabase_client import Supabase
 from src.utils.logger import Logger
@@ -15,15 +15,15 @@ def send_message(payload:RegisterInstitution):
     )
 
 
-@router.get("/institutions", response_model=list[InstitutionResponse])
-def get_institutions():
+@router.get("/institutions", response_model=GetAllInstitutionsResponse)
+def get_institutions() -> GetAllInstitutionsResponse:
     logger = Logger()
     supabase_client = Supabase(logger)
 
     institutions = supabase_client.get_institutions()
 
-    return api_response(
+    return GetAllInstitutionsResponse(
         status_code=status.HTTP_200_OK,
-        message="Institutions fetched",
-        data=institutions
+        message="Successfully fetched institutions",
+        institutions=institutions
     )

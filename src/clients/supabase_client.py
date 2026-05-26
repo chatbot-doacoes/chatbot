@@ -62,18 +62,18 @@ class Supabase:
             self.logger.add_step(f"Failed to get key hashes from Supabase: {str(e)}")
             return False
         
-    def get_institutions(self) -> list:
+    def get_institutions(self) -> list[InstitutionModel]:
         try:
             self.logger.add_step("Trying to get institutions from Supabase.")
             response = (
                 self.client.table(InstitutionModel.TABLE_NAME)
-                .select("id, institution_name, is_active, created_at, update_at")
+                .select("*")
                 .execute()
             )
             data = getattr(response, "data", None)
             if not data or not isinstance(data, list):
                 return []
-            return data
+            return [InstitutionModel.model_validate(row) for row in data]
         except Exception as e:
             self.logger.add_step(f"Failed to get institutions: {str(e)}")
             return []

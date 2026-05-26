@@ -1,6 +1,7 @@
 from fastapi import FastAPI, status, Request
 from fastapi.responses import JSONResponse
 
+from src.api.base_response import BaseResponse
 from src.api.middlewares.ip_allowlist import set_ip_allowlist
 from src.api.public.router import public_router
 from src.api.internal.router import internal_router
@@ -21,9 +22,9 @@ def api_exception_handler(request: Request, exc: APIException) -> JSONResponse:
         message=exc.message,
     )
 
-@app.get("/health-check")
-def health_check() -> JSONResponse:
-    return api_response(
+@app.get("/health-check", response_model=BaseResponse)
+def health_check() -> BaseResponse:
+    return BaseResponse(
         status_code=status.HTTP_200_OK,
         message="The service is healthy!"
     )
