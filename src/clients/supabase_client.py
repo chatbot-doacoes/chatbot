@@ -60,17 +60,13 @@ class Supabase:
             return False
         
     def get_institutions(self) -> list[InstitutionModel]:
-        try:
-            self.logger.add_step("Trying to get institutions from Supabase.")
-            response = (
-                self.client.table(InstitutionModel.TABLE_NAME)
-                .select("*")
-                .execute()
-            )
-            data = getattr(response, "data", None)
-            if not data or not isinstance(data, list):
-                return []
-            return [InstitutionModel.model_validate(row) for row in data]
-        except Exception as e:
-            self.logger.add_step(f"Failed to get institutions: {str(e)}")
+        self.logger.add_step("Trying to get institutions from Supabase.")
+        response = (
+            self.client.table(InstitutionModel.TABLE_NAME)
+            .select("*")
+            .execute()
+        )
+        data = getattr(response, "data", None)
+        if not data or not isinstance(data, list):
             return []
+        return [InstitutionModel.model_validate(row) for row in data]
