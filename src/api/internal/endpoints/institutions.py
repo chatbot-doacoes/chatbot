@@ -4,6 +4,7 @@ from src.api.internal.responses.institutions import GetAllInstitutionsResponse, 
 from src.api.internal.payloads.institutions import RegisterInstitution, UpdateInstitution
 from src.utils.utils import api_response
 from src.clients.supabase_client import Supabase
+from uuid import UUID
 
 router = APIRouter()
 
@@ -33,8 +34,6 @@ def get_institutions(request: Request) -> GetAllInstitutionsResponse:
         message="Successfully fetched institutions",
         institutions=institutions
     )
-
-from uuid import UUID
 
 @router.patch("/institutions/{institution_id}", response_model=UpdateInstitutionResponse)
 def update_institution(institution_id: UUID, payload: UpdateInstitution, request: Request) -> UpdateInstitutionResponse:

@@ -83,7 +83,7 @@ class Supabase:
             return [MessageModel.model_validate(row) for row in data]
         except Exception as e:
             self.logger.add_step(f"Failed to get messages for institution '{institution_id}': {str(e)}")
-            return []
+            raise
         
     def get_institutions(self) -> list[InstitutionModel]:
         self.logger.add_step("Trying to get institutions from Supabase.")
