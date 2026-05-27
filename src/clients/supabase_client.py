@@ -1,8 +1,10 @@
 from supabase import Client, create_client
+from uuid import UUID
 from src.utils.logger import Logger
 from src.config.environment import Environment
 from src.utils.ttl_cache import TTLCache
 from src.models.institution import InstitutionModel
+from src.models.message import MessageModel
 
 
 key_hashes_cache = TTLCache(ttl_seconds=300)
@@ -36,6 +38,12 @@ class Supabase:
             data=model.to_insert_dict(),
         )
 
+    def register_message(self, model: MessageModel) -> bool:
+        return self._create_record(
+            table_name=MessageModel.TABLE_NAME,
+            data=model.to_insert_dict(),
+        )
+
     def is_institution_registered(self, key_hash: str) -> bool:
         key_hashes_list = key_hashes_cache.get(KEY_HASHES_LIST)
         if key_hashes_list is not None:
@@ -61,3 +69,21 @@ class Supabase:
         except Exception as e:
             self.logger.add_step(f"Failed to get key hashes from Supabase: {str(e)}")
             return False
+
+    def get_messages_by_institution(self, institution_id: UUID | str) -> list[MessageModel]:
+        try:
+            self.logger.add_step(f"Trying to get messages for institution '{institution_id}'.")
+            response = (
+                self.client.table(MessageModel.TABLE_NAME)
+                .select("*")
+                .eq(MessageModel.Cols.institution_id, str(institution_id))
+                .execute()
+            )
+            data = getattr(response, "data", None)
+            if not data or not isinstance(data, list):
+                return []
+
+            return [MessageModel.model_validate(row) for row in data]
+        except Exception as e:
+            self.logger.add_step(f"Failed to get messages for institution '{institution_id}': {str(e)}")
+            return []
