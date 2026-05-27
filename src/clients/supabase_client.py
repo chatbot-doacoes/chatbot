@@ -97,6 +97,7 @@ class Supabase:
             return []
         return [InstitutionModel.model_validate(row) for row in data]
     
+    
     def update_institution(self, institution_id: str, data: dict) -> InstitutionModel:
         self.logger.add_step(f"Trying to update institution '{institution_id}'.")
         response = (
