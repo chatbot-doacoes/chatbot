@@ -1,11 +1,15 @@
 from supabase import Client, create_client
+from uuid import UUID
 from src.utils.logger import Logger
 from src.config.environment import Environment
 from src.utils.ttl_cache import TTLCache
-from src.enum.schema_enum import Institutions
+from src.models.institution import InstitutionModel
+from src.models.message import MessageModel
 
-key_hashes_cache = TTLCache(ttl_seconds=300) # 5 Minutes
+
+key_hashes_cache = TTLCache(ttl_seconds=300)
 KEY_HASHES_LIST = "key_hashes_list"
+
 
 class Supabase:
     def __init__(self, logger: Logger):
@@ -26,10 +30,16 @@ class Supabase:
             self.logger.add_step(f"Failed to create record in {table_name}: {str(e)}")
             return False
 
-    def register_institution(self, data: dict) -> bool:
+    def register_institution(self, model: InstitutionModel) -> bool:
         return self._create_record(
-            table_name=Institutions.TABLE,
-            data=data,
+            table_name=InstitutionModel.TABLE_NAME,
+            data=model.to_insert_dict(),
+        )
+
+    def register_message(self, model: MessageModel) -> bool:
+        return self._create_record(
+            table_name=MessageModel.TABLE_NAME,
+            data=model.to_insert_dict(),
         )
 
     def is_institution_registered(self, key_hash: str) -> bool:
@@ -39,18 +49,39 @@ class Supabase:
 
         try:
             response = (
-                self.client.table(Institutions.TABLE)
-                .select(Institutions.KEY_HASH)
-                .eq(Institutions.IS_ACTIVE, True)
+                self.client.table(InstitutionModel.TABLE_NAME)
+                .select("*")
+                .eq(InstitutionModel.Cols.is_active, True)
                 .execute()
             )
             data = getattr(response, "data", None)
             if not data or not isinstance(data, list):
                 return False
 
-            key_hashes_list = [row[Institutions.KEY_HASH] for row in data]
+            institutions = [InstitutionModel.model_validate(row) for row in data]
+            key_hashes_list = [inst.key_hash for inst in institutions]
             key_hashes_cache.set(KEY_HASHES_LIST, key_hashes_list)
+            
             return key_hash in key_hashes_list
         except Exception as e:
             self.logger.add_step(f"Failed to check institution registration: {str(e)}")
             return False
+
+    def get_messages_by_institution(self, institution_id: UUID | str) -> list[MessageModel]:
+        try:
+            self.logger.add_step(f"Trying to get messages for institution '{institution_id}'.")
+            response = (
+                self.client.table(MessageModel.TABLE_NAME)
+                .select("*")
+                .eq(MessageModel.Cols.institution_id, str(institution_id))
+                .execute()
+            )
+            data = getattr(response, "data", None)
+            if not data or not isinstance(data, list):
+                return []
+
+            return [MessageModel.model_validate(row) for row in data]
+        except Exception as e:
+            self.logger.add_step(f"Failed to get messages for institution '{institution_id}': {str(e)}")
+            raise 
+
