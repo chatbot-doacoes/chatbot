@@ -18,7 +18,7 @@ class InstitutionModel(BaseModel):
 
     id: UUID | None = None
     institution_name: str
-    key_hash: str = Field(min_length=64, max_length=64, exclude=True)
+    key_hash: str = Field(min_length=64, max_length=64, exclude = True)
     is_active: bool = False
     created_at: datetime | None = None
     update_at: datetime | None = None
