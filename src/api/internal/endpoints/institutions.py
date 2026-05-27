@@ -1,18 +1,56 @@
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, status, Depends
+from src.api.dependencies.validations import verify_internal_api_key
+from src.models.institution import InstitutionModel
 from src.api.exceptions import APIException
-from src.api.internal.responses.institutions import GetAllInstitutionsResponse, UpdateInstitutionResponse
+from src.api.internal.responses.institutions import GetAllInstitutionsResponse, UpdateInstitutionResponse, RegisterInstitutionResponse
 from src.api.internal.payloads.institutions import RegisterInstitution, UpdateInstitution
-from src.utils.utils import api_response
+from src.utils.utils import api_response, hash_api_key, generate_api_key
 from src.clients.supabase_client import Supabase
 from uuid import UUID
 
 router = APIRouter()
 
-@router.post("/institutions")
-def send_message(payload:RegisterInstitution):
-    return api_response(
+@router.post(
+    "/institutions",
+    response_model=RegisterInstitutionResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(verify_internal_api_key)]
+)
+def register_institution(
+    payload: RegisterInstitution,
+    request: Request
+) -> RegisterInstitutionResponse:
+
+    logger = request.state.logger
+
+    logger.add_step("Starting institution registration")
+
+    supabase_client = Supabase(logger)
+
+    api_key = generate_api_key()
+
+    institution = InstitutionModel(
+        institution_name=payload.institution_name,
+        key_hash=hash_api_key(api_key),
+        is_active=True,
+    )
+
+    created_institution = supabase_client.register_institution(institution)
+
+    if created_institution is None:
+
+        raise APIException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            message="Failed to register institution"
+        )
+
+    logger.add_step("Institution registered successfully")
+
+    return RegisterInstitutionResponse(
         status_code=status.HTTP_201_CREATED,
-        message=payload.institution_name
+        message="Institution registered successfully",
+        institution=created_institution,
+        api_key=api_key,
     )
 
 

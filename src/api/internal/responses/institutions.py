@@ -7,3 +7,7 @@ class GetAllInstitutionsResponse(BaseResponse):
 
 class UpdateInstitutionResponse(BaseResponse):
     institution: InstitutionModel
+
+class RegisterInstitutionResponse(BaseResponse):
+    institution: InstitutionModel
+    api_key: str
