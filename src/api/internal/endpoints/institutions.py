@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, status, Depends
+from fastapi import APIRouter, Request, Depends
 
 from src.api.dependencies.validations import verify_internal_api_key
 from src.models.institution import InstitutionModel
@@ -7,7 +7,7 @@ from src.api.enum.responses_enum import ResponsesEnum
 from src.api.exceptions import APIException
 from src.api.internal.responses.institutions import GetAllInstitutionsResponse, UpdateInstitutionResponse, RegisterInstitutionResponse
 from src.api.internal.payloads.institutions import RegisterInstitution, UpdateInstitution
-from src.utils.utils import api_response, hash_api_key, generate_api_key
+from src.utils.utils import hash_api_key, generate_api_key
 from src.clients.supabase_client import Supabase
 from uuid import UUID
 
@@ -18,7 +18,41 @@ router = APIRouter()
     "/institutions",
     response_model=RegisterInstitutionResponse,
     status_code=ResponsesEnum.INSTITUTION_CREATED.status_code,
-    dependencies=[Depends(verify_internal_api_key)]
+    dependencies=[Depends(verify_internal_api_key)],
+    responses={
+        ResponsesEnum.INSTITUTION_CREATED.status_code: {
+            "model": RegisterInstitutionResponse,
+            "description": ResponsesEnum.INSTITUTION_CREATED.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.INSTITUTION_CREATED.status_code,
+                        "message": ResponsesEnum.INSTITUTION_CREATED.message,
+                        "institution": {
+                            "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+                            "institution_name": "Hospital São Lucas",
+                            "is_active": True,
+                            "created_at": "2026-05-28T15:00:00Z",
+                            "update_at": "2026-05-28T15:00:00Z"
+                        },
+                        "api_key": "institution_sk_xxxxxxxxxxxxxxxxx"
+                    }
+                }
+            }
+        },
+        ResponsesEnum.FAILED_TO_CREATE_INSTITUTION.status_code: {
+            "model": BaseResponse,
+            "description": ResponsesEnum.FAILED_TO_CREATE_INSTITUTION.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.FAILED_TO_CREATE_INSTITUTION.status_code,
+                        "message": ResponsesEnum.FAILED_TO_CREATE_INSTITUTION.message
+                    }
+                }
+            }
+        }
+    }
 )
 def register_institution(
     payload: RegisterInstitution,
