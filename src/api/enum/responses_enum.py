@@ -8,6 +8,7 @@ class ResponsesEnum(Enum):
     INSTITUTIONS_FETCHED = (status.HTTP_200_OK, "Successfully fetched institutions.")
     INSTITUTION_CREATED = (status.HTTP_201_CREATED, "Institution created successfully.")
     INSTITUTION_UPDATED = (status.HTTP_200_OK, "Institution updated successfully.")
+    INSTITUTION_DELETED = (status.HTTP_200_OK, "Institution deleted successfully.")
 
     # --- Error Responses (4xx) ---
     IP_NOT_ALLOWED = (status.HTTP_403_FORBIDDEN, "IP not allowed.")
@@ -17,14 +18,9 @@ class ResponsesEnum(Enum):
 
     # --- Server Error Responses (5xx) ---
     FAILED_TO_FETCH_INSTITUTIONS = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to fetch institutions.")
-    FAILED_TO_UPDATE_INSTITUTION = (
-        status.HTTP_500_INTERNAL_SERVER_ERROR,
-        "Failed to update institution."
-    )
-    FAILED_TO_CREATE_INSTITUTION = (
-        status.HTTP_500_INTERNAL_SERVER_ERROR,
-        "Failed to create institution."
-    )
+    FAILED_TO_UPDATE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to update institution.")
+    FAILED_TO_CREATE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to create institution.")
+    FAILED_TO_DELETE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to delete institution.")
 
     def __init__(self, status_code: int, message: str):
         self._status_code = status_code

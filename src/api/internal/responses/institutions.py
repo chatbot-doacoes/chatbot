@@ -11,3 +11,6 @@ class UpdateInstitutionResponse(BaseResponse):
 class RegisterInstitutionResponse(BaseResponse):
     institution: InstitutionModel
     api_key: str
+
+class DeleteInstitutionResponse(BaseResponse):
+    institution: InstitutionModel
