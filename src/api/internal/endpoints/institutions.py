@@ -30,7 +30,7 @@ router = APIRouter()
                         "message": ResponsesEnum.INSTITUTION_CREATED.message,
                         "institution": {
                             "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-                            "institution_name": "Hospital São Lucas",
+                            "institution_name": "New institution",
                             "is_active": True,
                             "created_at": "2026-05-28T15:00:00Z",
                             "update_at": "2026-05-28T15:00:00Z"
