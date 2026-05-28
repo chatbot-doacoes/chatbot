@@ -8,6 +8,7 @@ router = APIRouter()
 
 @router.post("/messages", response_model=BaseResponse)
 def send_message(payload:SendMessages) -> BaseResponse:
+    # Criar o ENUM quando for implementar!!!
     return BaseResponse(
         status_code=status.HTTP_200_OK,
         message=payload.message
