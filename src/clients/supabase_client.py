@@ -50,7 +50,7 @@ class Supabase:
         try:
             response = (
                 self.client.table(InstitutionModel.TABLE_NAME)
-                .select("*")
+                .select(InstitutionModel.Cols.key_hash)
                 .eq(InstitutionModel.Cols.is_active, True)
                 .execute()
             )
@@ -58,15 +58,15 @@ class Supabase:
             if not data or not isinstance(data, list):
                 return False
 
-            institutions = [InstitutionModel.model_validate(row) for row in data]
-            key_hashes_list = [inst.key_hash for inst in institutions]
+            key_hashes_list = [row[InstitutionModel.Cols.key_hash] for row in data]
+
             key_hashes_cache.set(KEY_HASHES_LIST, key_hashes_list)
             
             return key_hash in key_hashes_list
         except Exception as e:
             self.logger.add_step(f"Failed to check institution registration: {str(e)}")
             return False
-        
+
     def get_messages_by_institution(self, institution_id: UUID | str) -> list[MessageModel]:
         try:
             self.logger.add_step(f"Trying to get messages for institution '{institution_id}'.")
@@ -85,6 +85,7 @@ class Supabase:
             self.logger.add_step(f"Failed to get messages for institution '{institution_id}': {str(e)}")
             raise
         
+
     def get_institutions(self) -> list[InstitutionModel]:
         self.logger.add_step("Trying to get institutions from Supabase.")
         response = (
@@ -96,8 +97,8 @@ class Supabase:
         if not data or not isinstance(data, list):
             return []
         return [InstitutionModel.model_validate(row) for row in data]
-    
-    
+
+   
     def update_institution(self, institution_id: str, data: dict) -> InstitutionModel:
         self.logger.add_step(f"Trying to update institution '{institution_id}'.")
         response = (
@@ -110,3 +111,4 @@ class Supabase:
         if not result or not isinstance(result, list):
             raise Exception(f"Institution '{institution_id}' not found")
         return InstitutionModel.model_validate(result[0])
+
