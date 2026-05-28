@@ -18,7 +18,6 @@ router = APIRouter()
     "/institutions",
     response_model=RegisterInstitutionResponse,
     status_code=ResponsesEnum.INSTITUTION_CREATED.status_code,
-    dependencies=[Depends(verify_internal_api_key)],
     responses={
         ResponsesEnum.INSTITUTION_CREATED.status_code: {
             "model": RegisterInstitutionResponse,
