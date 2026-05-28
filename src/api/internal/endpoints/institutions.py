@@ -248,10 +248,34 @@ def update_institution(
         ResponsesEnum.INSTITUTION_DELETED.status_code: {
             "model": DeleteInstitutionResponse,
             "description": ResponsesEnum.INSTITUTION_DELETED.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.INSTITUTION_DELETED.status_code,
+                        "message": ResponsesEnum.INSTITUTION_DELETED.message,
+                        "institution": {
+                            "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+                            "institution_name": "Institution 1",
+                            "is_active": True,
+                            "created_at": "2023-10-27T10:00:00Z",
+                            "update_at": "2023-10-27T10:00:00Z"
+                        }
+                    }
+                }
+            }
         },
+
         ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.status_code: {
             "model": BaseResponse,
             "description": ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.status_code,
+                        "message": ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.message
+                    }
+                }
+            }
         }
     },
 )
