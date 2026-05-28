@@ -81,17 +81,70 @@ def get_institutions(request: Request) -> GetAllInstitutionsResponse:
         message=ResponsesEnum.INSTITUTIONS_FETCHED.message,
         institutions=institutions
     )
-<<<<<<< HEAD
 
-@router.patch("/institutions/{institution_id}", response_model=UpdateInstitutionResponse)
-def update_institution(institution_id: UUID, payload: UpdateInstitution, request: Request) -> UpdateInstitutionResponse:
+@router.patch(
+    "/institutions/{institution_id}",
+    response_model=UpdateInstitutionResponse,
+    responses={
+        ResponsesEnum.INSTITUTION_UPDATED.status_code: {
+            "model": UpdateInstitutionResponse,
+            "description": ResponsesEnum.INSTITUTION_UPDATED.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.INSTITUTION_UPDATED.status_code,
+                        "message": ResponsesEnum.INSTITUTION_UPDATED.message,
+                        "institution": {
+                            "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+                            "institution_name": "Updated Institution",
+                            "is_active": True,
+                            "created_at": "2023-10-27T10:00:00Z",
+                            "update_at": "2023-10-28T14:30:00Z"
+                        }
+                    }
+                }
+            }
+        },
+        ResponsesEnum.NO_FIELDS_TO_UPDATE.status_code: {
+            "model": BaseResponse,
+            "description": ResponsesEnum.NO_FIELDS_TO_UPDATE.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.NO_FIELDS_TO_UPDATE.status_code,
+                        "message": ResponsesEnum.NO_FIELDS_TO_UPDATE.message
+                    }
+                }
+            }
+        },
+        ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.status_code: {
+            "model": BaseResponse,
+            "description": ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.status_code,
+                        "message": ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.message
+                    }
+                }
+            }
+        }
+    }
+)
+def update_institution(
+    institution_id: UUID,
+    payload: UpdateInstitution,
+    request: Request
+) -> UpdateInstitutionResponse:
+
     supabase_client = Supabase(request.state.logger)
 
     update_data = payload.model_dump(exclude_none=True)
+
     if not update_data:
         raise APIException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            message="No fields to update"
+            status_code=ResponsesEnum.NO_FIELDS_TO_UPDATE.status_code,
+            message=ResponsesEnum.NO_FIELDS_TO_UPDATE.message
         )
 
     try:
@@ -100,16 +153,18 @@ def update_institution(institution_id: UUID, payload: UpdateInstitution, request
             data=update_data
         )
     except Exception as e:
-        request.state.logger.add_step(f"Failed to update institution: {str(e)}")
+        request.state.logger.add_step(
+            f"Failed to update institution: {str(e)}"
+        )
+
         raise APIException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Failed to update institution"
+            status_code=ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.status_code,
+            message=ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.message
         )
 
     return UpdateInstitutionResponse(
-        status_code=status.HTTP_200_OK,
-        message="Institution updated successfully",
+        status_code=ResponsesEnum.INSTITUTION_UPDATED.status_code,
+        message=ResponsesEnum.INSTITUTION_UPDATED.message,
         institution=institution
     )
-=======
->>>>>>> origin/dev
+

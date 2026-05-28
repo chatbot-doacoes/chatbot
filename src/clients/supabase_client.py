@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from supabase import Client, create_client
 from uuid import UUID
 from src.utils.logger import Logger
@@ -98,9 +100,14 @@ class Supabase:
             return []
         return [InstitutionModel.model_validate(row) for row in data]
 
-   
+
     def update_institution(self, institution_id: str, data: dict) -> InstitutionModel:
         self.logger.add_step(f"Trying to update institution '{institution_id}'.")
+
+        data[InstitutionModel.Cols.update_at] = (
+            datetime.now(timezone.utc).isoformat()
+        )
+
         response = (
             self.client.table(InstitutionModel.TABLE_NAME)
             .update(data)
