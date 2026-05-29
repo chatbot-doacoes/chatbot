@@ -4,3 +4,6 @@ from src.models.institution import InstitutionModel
 
 class GetAllInstitutionsResponse(BaseResponse):
     institutions: list[InstitutionModel]
+
+class UpdateInstitutionResponse(BaseResponse):
+    institution: InstitutionModel
