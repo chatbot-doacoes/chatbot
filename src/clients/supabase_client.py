@@ -43,9 +43,7 @@ class Supabase:
             table_name=InstitutionModel.TABLE_NAME,
             data=model.to_insert_dict(),
         )
-        if result is None:
-            return None
-        return InstitutionModel.model_validate(result)
+        return InstitutionModel.model_validate(result) if result else None
 
     def register_message(self, model: MessageModel) -> bool:
         return self._create_record(
