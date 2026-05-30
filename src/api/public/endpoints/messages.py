@@ -9,5 +9,5 @@ router = APIRouter()
 def send_messages(payload: SendMessages) -> BaseResponse:
     return BaseResponse(
         status_code=status.HTTP_200_OK,
-        message=payload.send_to
+        message="message"
     )

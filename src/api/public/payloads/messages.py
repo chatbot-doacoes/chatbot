@@ -11,6 +11,13 @@ class User(BaseModel):
     user_phone: str = Field(min_length=11, max_length=11)
     donation_type: MessageTag
 
+    @field_validator("user_phone")
+    @classmethod
+    def validate_phone_number(cls, user_phone: str) -> str:
+        if not user_phone.isdigit():
+            raise ValueError("phone number must contain only digits.")
+        return user_phone
+
 class SendMessages(BaseModel):
     send_to: list[dict[str, Any]]
 
