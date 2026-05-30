@@ -53,4 +53,4 @@ class Logger:
 
     def generate_log(self) -> None:
 
-        self.logger.info(json.dumps(self.log_data))
+        self.logger.info(json.dumps(self.log_data, indent=2))
