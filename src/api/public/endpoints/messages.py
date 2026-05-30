@@ -1,15 +1,13 @@
 from fastapi import APIRouter, status
 
 from src.api.base_response import BaseResponse
-from src.api.public.payloads.messages import SendMessages
-from src.utils.utils import api_response
+from src.api.public.payloads.messages import SendMessages, User
 
 router = APIRouter()
 
 @router.post("/messages", response_model=BaseResponse)
-def send_message(payload:SendMessages) -> BaseResponse:
-    # Criar o ENUM quando for implementar!!!
+def send_messages(payload: SendMessages) -> BaseResponse:
     return BaseResponse(
         status_code=status.HTTP_200_OK,
-        message=payload.message
+        message=payload.send_to
     )

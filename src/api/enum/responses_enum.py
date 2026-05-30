@@ -14,13 +14,11 @@ class ResponsesEnum(Enum):
     API_KEY_MISSING = (status.HTTP_401_UNAUTHORIZED, "API Key is missing.")
     API_KEY_INVALID = (status.HTTP_401_UNAUTHORIZED, "This API Key is not registered.")
     NO_FIELDS_TO_UPDATE = (status.HTTP_400_BAD_REQUEST, "No fields to update.")
+    INVALID_FIELDS = (status.HTTP_422_UNPROCESSABLE_ENTITY, "The request body has invalid fields.")
 
     # --- Server Error Responses (5xx) ---
     FAILED_TO_FETCH_INSTITUTIONS = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to fetch institutions.")
-    FAILED_TO_UPDATE_INSTITUTION = (
-        status.HTTP_500_INTERNAL_SERVER_ERROR,
-        "Failed to update institution."
-    )
+    FAILED_TO_UPDATE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to update institution.")
 
     def __init__(self, status_code: int, message: str):
         self._status_code = status_code

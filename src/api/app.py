@@ -1,4 +1,5 @@
-from fastapi import FastAPI, status, Request
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from src.api.base_response import BaseResponse
@@ -22,6 +23,13 @@ def api_exception_handler(request: Request, exc: APIException) -> JSONResponse:
     return api_response(
         status_code=exc.status_code,
         message=exc.message,
+    )
+
+@app.exception_handler(RequestValidationError)
+def api_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    return api_response(
+        status_code=ResponsesEnum.INVALID_FIELDS.status_code,
+        message=ResponsesEnum.INVALID_FIELDS.message
     )
 
 @app.get("/health-check", response_model=BaseResponse)

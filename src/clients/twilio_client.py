@@ -17,7 +17,7 @@ class Twilio:
 
     @staticmethod
     def _format_whatsapp_number(raw_number: str) -> str:
-        return f"whatsapp:+{raw_number}"
+        return f"whatsapp:+55{raw_number}"
 
     def send_whatsapp_message(self, to_number: str, message: str):
         try:
