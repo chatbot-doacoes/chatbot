@@ -1,13 +1,11 @@
 from fastapi import APIRouter, Request, Depends
 
-from src.api.dependencies.validations import verify_internal_api_key
 from src.models.institution import InstitutionModel
 from src.api.base_response import BaseResponse
 from src.api.enum.responses_enum import ResponsesEnum
 from src.api.exceptions import APIException
 from src.api.internal.responses.institutions import GetAllInstitutionsResponse, UpdateInstitutionResponse
 from src.api.internal.payloads.institutions import RegisterInstitution, UpdateInstitution
-from src.utils.utils import hash_api_key
 from src.clients.supabase_client import Supabase
 from uuid import UUID
 
@@ -58,14 +56,15 @@ def register_institution(
 
     institution = InstitutionModel(
         institution_name=payload.institution_name,
+        key_hash=payload.key_hash,
         is_active=True,
     )
 
-    created_institution = supabase_client.register_institution(
+    institution_created = supabase_client.register_institution(
         institution
     )
 
-    if created_institution is None:
+    if not institution_created:
 
         raise APIException(
             status_code=ResponsesEnum.FAILED_TO_CREATE_INSTITUTION.status_code,
