@@ -25,27 +25,25 @@ class Supabase:
         except Exception as e:
             self.logger.add_step(f"Failed to create Supabase client: {str(e)}")
 
-    def _create_record(self, table_name: str, data: dict) -> dict | None:
+    def _create_record(self, table_name: str, data: dict) -> bool:
         try:
             response = self.client.table(table_name).insert(data).execute()
 
             result = getattr(response, "data", None)
 
-            if not result or not isinstance(result, list):
-                return None
-            return result[0]
-        except Exception as e:
-            self.logger.add_step(f"Failed to create record in {table_name}: {str(e)}")
-            return None
+            return bool(result)
 
-    def register_institution(self, model: InstitutionModel) -> InstitutionModel | None:
-        result = self._create_record(
+        except Exception as e:
+            self.logger.add_step(
+                f"Failed to create record in {table_name}: {str(e)}"
+            )
+            return False
+        
+    def register_institution(self, model: InstitutionModel) -> bool:
+        return self._create_record(
             table_name=InstitutionModel.TABLE_NAME,
             data=model.to_insert_dict(),
         )
-        if result is None:
-            return None
-        return InstitutionModel.model_validate(result)
 
     def register_message(self, model: MessageModel) -> bool:
         return self._create_record(

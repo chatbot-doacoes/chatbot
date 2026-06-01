@@ -1,13 +1,11 @@
 from fastapi import APIRouter, Request, Depends
 
-from src.api.dependencies.validations import verify_internal_api_key
 from src.models.institution import InstitutionModel
 from src.api.base_response import BaseResponse
 from src.api.enum.responses_enum import ResponsesEnum
 from src.api.exceptions import APIException
-from src.api.internal.responses.institutions import DeleteInstitutionResponse, GetAllInstitutionsResponse, UpdateInstitutionResponse, RegisterInstitutionResponse
+from src.api.internal.responses.institutions import GetAllInstitutionsResponse, UpdateInstitutionResponse, DeleteInstitutionResponse
 from src.api.internal.payloads.institutions import RegisterInstitution, UpdateInstitution
-from src.utils.utils import hash_api_key, generate_api_key
 from src.clients.supabase_client import Supabase
 from uuid import UUID
 
@@ -16,25 +14,17 @@ router = APIRouter()
 
 @router.post(
     "/institutions",
-    response_model=RegisterInstitutionResponse,
+    response_model=BaseResponse,
     status_code=ResponsesEnum.INSTITUTION_CREATED.status_code,
     responses={
         ResponsesEnum.INSTITUTION_CREATED.status_code: {
-            "model": RegisterInstitutionResponse,
+            "model": BaseResponse,
             "description": ResponsesEnum.INSTITUTION_CREATED.message,
             "content": {
                 "application/json": {
                     "example": {
                         "status_code": ResponsesEnum.INSTITUTION_CREATED.status_code,
                         "message": ResponsesEnum.INSTITUTION_CREATED.message,
-                        "institution": {
-                            "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-                            "institution_name": "New institution",
-                            "is_active": True,
-                            "created_at": "2026-05-28T15:00:00Z",
-                            "update_at": "2026-05-28T15:00:00Z"
-                        },
-                        "api_key": "institution_sk_xxxxxxxxxxxxxxxxx"
                     }
                 }
             }
@@ -56,7 +46,7 @@ router = APIRouter()
 def register_institution(
     payload: RegisterInstitution,
     request: Request
-) -> RegisterInstitutionResponse:
+) -> BaseResponse:
 
     logger = request.state.logger
 
@@ -64,19 +54,17 @@ def register_institution(
 
     supabase_client = Supabase(logger)
 
-    api_key = generate_api_key()
-
     institution = InstitutionModel(
         institution_name=payload.institution_name,
-        key_hash=hash_api_key(api_key),
+        key_hash=payload.key_hash,
         is_active=True,
     )
 
-    created_institution = supabase_client.register_institution(
+    institution_created = supabase_client.register_institution(
         institution
     )
 
-    if created_institution is None:
+    if not institution_created:
 
         raise APIException(
             status_code=ResponsesEnum.FAILED_TO_CREATE_INSTITUTION.status_code,
@@ -85,11 +73,9 @@ def register_institution(
 
     logger.add_step("Institution registered successfully")
 
-    return RegisterInstitutionResponse(
+    return BaseResponse(
         status_code=ResponsesEnum.INSTITUTION_CREATED.status_code,
         message=ResponsesEnum.INSTITUTION_CREATED.message,
-        institution=created_institution,
-        api_key=api_key,
     )
 
 

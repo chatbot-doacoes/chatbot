@@ -28,6 +28,8 @@ class InstitutionModel(BaseModel):
 
 
     def to_insert_dict(self) -> dict:
-        data = self.model_dump(exclude={"id", "created_at", "update_at"})
-        data["key_hash"] = self.key_hash # Reinsere manualmente o key_hash no payload de insert, pois o campo possui exclude=True para evitar exposição em responses da API.
-        return data
+        return {
+            "institution_name": self.institution_name,
+            "key_hash": self.key_hash,
+            "is_active": self.is_active,
+        }
