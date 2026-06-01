@@ -21,6 +21,10 @@ class ResponsesEnum(Enum):
         status.HTTP_500_INTERNAL_SERVER_ERROR,
         "Failed to update institution."
     )
+    FAILED_TO_CREATE_INSTITUTION = (
+        status.HTTP_500_INTERNAL_SERVER_ERROR,
+        "Failed to create institution."
+    )
 
     def __init__(self, status_code: int, message: str):
         self._status_code = status_code

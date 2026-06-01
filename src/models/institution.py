@@ -26,5 +26,10 @@ class InstitutionModel(BaseModel):
     class Config:
         from_attributes = True
 
+
     def to_insert_dict(self) -> dict:
-        return self.model_dump(exclude={"id", "created_at", "update_at"})
+        return {
+            "institution_name": self.institution_name,
+            "key_hash": self.key_hash,
+            "is_active": self.is_active,
+        }

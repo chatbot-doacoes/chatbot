@@ -1,3 +1,4 @@
+from unittest import result
 from datetime import datetime, timezone
 
 from supabase import Client, create_client
@@ -27,11 +28,17 @@ class Supabase:
     def _create_record(self, table_name: str, data: dict) -> bool:
         try:
             response = self.client.table(table_name).insert(data).execute()
-            return bool(getattr(response, "data", None))
-        except Exception as e:
-            self.logger.add_step(f"Failed to create record in {table_name}: {str(e)}")
-            return False
 
+            result = getattr(response, "data", None)
+
+            return bool(result)
+
+        except Exception as e:
+            self.logger.add_step(
+                f"Failed to create record in {table_name}: {str(e)}"
+            )
+            return False
+        
     def register_institution(self, model: InstitutionModel) -> bool:
         return self._create_record(
             table_name=InstitutionModel.TABLE_NAME,
