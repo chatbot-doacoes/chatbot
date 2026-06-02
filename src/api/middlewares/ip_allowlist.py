@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, status
 from starlette.responses import JSONResponse
 
+from src.api.base_response import BaseResponse
 from src.api.enum.responses_enum import ResponsesEnum
 from src.config.environment import Environment
 from src.utils.utils import api_response
@@ -19,6 +20,9 @@ def set_ip_allowlist(app: FastAPI) -> None:
         if client_ip not in allowed_ips:
             return api_response(
                 status_code=ResponsesEnum.IP_NOT_ALLOWED.status_code,
-                message=ResponsesEnum.IP_NOT_ALLOWED.message,
+                response=BaseResponse(
+                    status_code=ResponsesEnum.IP_NOT_ALLOWED.status_code,
+                    message=ResponsesEnum.IP_NOT_ALLOWED.message
+                )
             )
         return await call_next(request)
