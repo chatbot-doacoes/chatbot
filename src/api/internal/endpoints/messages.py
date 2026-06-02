@@ -21,7 +21,8 @@ def post_message(institution_id: UUID, payload: RegisterMessage, request: Reques
     message_model = MessageModel(
         institution_id=institution_id,
         tag=payload.tag,
-        message_template=payload.message_template
+        message_template=payload.message_template,
+        donation_url=str(payload.donation_url),
     )
 
     try:

@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 from src.models.message import MessageTag
 
 class RegisterMessage(BaseModel):
     tag: MessageTag
     message_template: str
+    donation_url: HttpUrl

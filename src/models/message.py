@@ -19,6 +19,7 @@ class MessageModel(BaseModel):
         institution_id = "institution_id"
         tag = "tag"
         message_template = "message_template"
+        donation_url = "donation_url"
         created_at = "created_at"
         update_at = "update_at"
 
@@ -26,6 +27,7 @@ class MessageModel(BaseModel):
     institution_id: UUID
     tag: MessageTag
     message_template: str
+    donation_url: str | None = None
     created_at: datetime | None = None
     update_at: datetime | None = None
 
@@ -33,4 +35,4 @@ class MessageModel(BaseModel):
         from_attributes = True
 
     def to_insert_dict(self) -> dict:
-        return self.model_dump(exclude={"id", "created_at", "update_at"})
+        return self.model_dump(exclude={"id", "created_at", "update_at"}, mode="json")

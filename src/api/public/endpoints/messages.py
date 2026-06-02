@@ -42,7 +42,14 @@ def send_messages(
             )
             continue
 
-        template = hello_string + random.choice(template_list)
+        selected_template = random.choice(template_list)
+
+        template = (
+            hello_string
+            + selected_template["message_template"]
+            + "\n\n"
+            + f"🔗 Saiba mais ou contribua em:\n{selected_template['donation_url']}"
+        )
         if not twilio_client.send_whatsapp_message(
             to_number=user.user_phone,
             message=template
