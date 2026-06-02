@@ -26,24 +26,27 @@ class SendMessages(BaseModel):
 
     @field_validator("send_to")
     @classmethod
-    def validate_send_to(cls, users: list[dict[str, Any]]) -> tuple[list[User], list[Any]]:
+    def validate_send_to(cls, users: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if not users:
             raise APIException(
                 status_code=ResponsesEnum.INVALID_FIELDS.status_code,
                 message=ResponsesEnum.INVALID_FIELDS.message,
             )
+        return users
 
-        valid_users = []
-        invalid_users = []
-        for user in users:
+    def split_users(self) -> tuple[list[User], list[dict[str, Any]]]:
+        valid_users: list[User] = []
+        invalid_users: list[dict[str, Any]] = []
+
+        for user_data in self.send_to:
             try:
-                valid_users.append(User.model_validate(user))
+                valid_users.append(User.model_validate(user_data))
             except ValidationError as e:
                 error_details = e.errors()[0]
                 field = error_details["loc"][0]
                 message = error_details["msg"]
-                user["reason"] = f"Field {field}: {message}."
-                invalid_users.append(user)
+                user_data["reason"] = f'Field "{field}": {message}.'
+                invalid_users.append(user_data)
 
         return valid_users, invalid_users
 

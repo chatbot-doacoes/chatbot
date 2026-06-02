@@ -98,6 +98,9 @@ class Supabase:
 
     def get_messages_templates(self, key_hash: str) -> list[dict[str, str]]:
         institution_id = self.get_institution_id_by_key_hash(key_hash)
+        if institution_id is None:
+            return []
+
         try:
             self.logger.add_step(f"Trying to get messages templates for institution '{institution_id}'.")
             response = (

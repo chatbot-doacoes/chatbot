@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from src.api.base_response import BaseResponse
@@ -29,9 +28,12 @@ def api_exception_handler(request: Request, exc: APIException) -> JSONResponse:
     )
 
 @app.get("/health-check", response_model=BaseResponse)
-def health_check() -> BaseResponse:
-    return BaseResponse(
+def health_check() -> JSONResponse:
+    return api_response(
         status_code=ResponsesEnum.HEALTH_CHECK_OK.status_code,
-        message=ResponsesEnum.HEALTH_CHECK_OK.message
+        response=BaseResponse(
+            status_code=ResponsesEnum.HEALTH_CHECK_OK.status_code,
+            message=ResponsesEnum.HEALTH_CHECK_OK.message
+        )
     )
 

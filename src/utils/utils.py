@@ -1,7 +1,6 @@
 import hashlib
 
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 
 from src.api.base_response import BaseResponse
 from src.models.message import MessageModel

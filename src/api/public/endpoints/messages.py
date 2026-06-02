@@ -1,7 +1,7 @@
 import random
 from typing import Any
 
-from fastapi import APIRouter, status, Request, Header
+from fastapi import APIRouter, Request, Header
 from starlette.responses import JSONResponse
 
 from src.api.base_response import BaseResponse
@@ -14,13 +14,13 @@ from src.utils.utils import hash_api_key, format_message_templates, api_response
 
 router = APIRouter()
 
-@router.post("/messages", response_model=BaseResponse)
+@router.post("/messages", response_model=MessagesResponse)
 def send_messages(
         payload: SendMessages,
         request: Request,
         api_key: str = Header(alias="X-API-Key")
 ) -> JSONResponse:
-    valid_users, invalid_users = payload.send_to
+    valid_users, invalid_users = payload.split_users()
 
     logger = request.state.logger
 
@@ -30,20 +30,20 @@ def send_messages(
     messages_templates = supabase_client.get_messages_templates(key_hash=hash_api_key(api_key))
     formated_messages = format_message_templates(messages_templates)
 
+    successful_users: list[User] = []
     for user in valid_users:
         hello_string = f"Olá {user.user_name}!\n\n"
 
         template_list = formated_messages.get(user.tag)
-        if template_list is None:
+        if not template_list:
             _add_invalid_user(
                 user=user,
                 reason="The tag is not registered for this institution.",
                 invalid_users=invalid_users
             )
-            valid_users.remove(user)
             continue
 
-        template = hello_string + random.choice(formated_messages[user.tag])
+        template = hello_string + random.choice(template_list)
         if not twilio_client.send_whatsapp_message(
             to_number=user.user_phone,
             message=template
@@ -53,7 +53,11 @@ def send_messages(
                 reason="Internal server error while sending the message.",
                 invalid_users=invalid_users
             )
-            valid_users.remove(user)
+            continue
+
+        successful_users.append(user)
+
+    valid_users = successful_users
 
     if not valid_users and invalid_users:
         return api_response(

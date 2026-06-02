@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Request
 from uuid import UUID
 
+from starlette.responses import JSONResponse
+
 from src.api.base_response import BaseResponse
 from src.api.enum.responses_enum import ResponsesEnum
 from src.api.exceptions import APIException
@@ -13,7 +15,7 @@ from src.models.message import MessageModel
 router = APIRouter()
 
 @router.post("/institutions/{institution_id}/messages")
-def post_message(institution_id: UUID, payload: RegisterMessage, request: Request):
+def post_message(institution_id: UUID, payload: RegisterMessage, request: Request) -> JSONResponse:
     supabase_client = Supabase(request.state.logger)
 
     message_model = MessageModel(
@@ -35,7 +37,10 @@ def post_message(institution_id: UUID, payload: RegisterMessage, request: Reques
 
     return api_response(
         status_code=ResponsesEnum.MESSAGE_CREATED.status_code,
-        message=ResponsesEnum.MESSAGE_CREATED.message
+        response=BaseResponse(
+            status_code=ResponsesEnum.MESSAGE_CREATED.status_code,
+            message=ResponsesEnum.MESSAGE_CREATED.message
+        )
     )
 
 @router.get("/institutions/{institution_id}/messages",
@@ -50,7 +55,7 @@ def post_message(institution_id: UUID, payload: RegisterMessage, request: Reques
                     "description": ResponsesEnum.FAILED_TO_FETCH_MESSAGES.message,
                 }
             })
-def get_messages(institution_id: UUID, request: Request) -> GetAllMessagesResponse:
+def get_messages(institution_id: UUID, request: Request) -> JSONResponse:
     supabase_client = Supabase(request.state.logger)
 
     try:
@@ -62,8 +67,11 @@ def get_messages(institution_id: UUID, request: Request) -> GetAllMessagesRespon
             message=ResponsesEnum.FAILED_TO_FETCH_MESSAGES.message
         )
 
-    return GetAllMessagesResponse(
+    return api_response(
         status_code=ResponsesEnum.MESSAGES_FETCHED.status_code,
-        message=ResponsesEnum.MESSAGES_FETCHED.message,
-        messages=messages
+        response=GetAllMessagesResponse(
+            status_code=ResponsesEnum.MESSAGES_FETCHED.status_code,
+            message=ResponsesEnum.MESSAGES_FETCHED.message,
+            messages=messages
+        )
     )
