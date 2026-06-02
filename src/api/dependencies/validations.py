@@ -9,8 +9,8 @@ from src.utils.utils import hash_api_key
 
 INTERNAL_API_KEY = "INTERNAL_API_KEY"
 
-external_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
-internal_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
+external_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+internal_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False) #auto_error falso para permitir tratamento customizado do erro no log
 
 
 def verify_external_api_key(
