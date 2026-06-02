@@ -19,13 +19,15 @@ class Twilio:
     def _format_whatsapp_number(raw_number: str) -> str:
         return f"whatsapp:+{raw_number}"
 
-    def send_whatsapp_message(self, to_number: str, message: str):
+    def send_whatsapp_message(self, to_number: str, message: str) -> bool:
         try:
             self.logger.add_step(f"Trying to send WhatsApp message.")
             self.client.messages.create(
                 from_=self.from_number,
-                to=self._format_whatsapp_number(to_number),
+                to=self._format_whatsapp_number(f"55{to_number}"),
                 body=message,
             )
+            return True
         except Exception as e:
             self.logger.add_step(f"Failed to send WhatsApp message: {str(e)}")
+            return False
