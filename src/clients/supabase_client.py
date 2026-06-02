@@ -69,6 +69,48 @@ class Supabase:
             self.logger.add_step(f"Failed to check institution registration: {str(e)}")
             return False
 
+    def get_institution_id_by_key_hash(self, key_hash: str) -> str | None:
+        try:
+            self.logger.add_step(f"Trying to get institution id by key_hash.")
+            response = (
+                self.client.table(InstitutionModel.TABLE_NAME)
+                .select(InstitutionModel.Cols.id)
+                .eq(InstitutionModel.Cols.key_hash, key_hash)
+                .eq(InstitutionModel.Cols.is_active, True)
+                .execute()
+            )
+
+            data = getattr(response, "data", None)
+            if not data or not isinstance(data, list):
+                return None
+
+            return data[0][InstitutionModel.Cols.id]
+        except Exception:
+            self.logger.add_step(f"Failed to get institution id by key_hash.")
+            return None
+
+    def get_messages_templates(self, key_hash: str) -> list[dict[str, str]]:
+        institution_id = self.get_institution_id_by_key_hash(key_hash)
+        try:
+            self.logger.add_step(f"Trying to get messages templates for institution '{institution_id}'.")
+            response = (
+                self.client.table(MessageModel.TABLE_NAME)
+                .select(
+                    MessageModel.Cols.tag,
+                    MessageModel.Cols.message_template
+                )
+                .eq(MessageModel.Cols.institution_id, institution_id)
+                .execute()
+            )
+            data = getattr(response, "data", None)
+            if not data or not isinstance(data, list):
+                return []
+            return data
+        except Exception as e:
+            self.logger.add_step(f"Failed to get messages templates for institution '{institution_id}': {str(e)}")
+            return []
+
+
     def get_messages_by_institution(self, institution_id: UUID | str) -> list[MessageModel]:
         try:
             self.logger.add_step(f"Trying to get messages for institution '{institution_id}'.")

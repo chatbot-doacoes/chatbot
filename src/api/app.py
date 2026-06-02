@@ -22,14 +22,10 @@ app.include_router(public_router)
 def api_exception_handler(request: Request, exc: APIException) -> JSONResponse:
     return api_response(
         status_code=exc.status_code,
-        message=exc.message,
-    )
-
-@app.exception_handler(RequestValidationError)
-def api_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
-    return api_response(
-        status_code=ResponsesEnum.INVALID_FIELDS.status_code,
-        message=ResponsesEnum.INVALID_FIELDS.message
+        response=BaseResponse(
+            status_code=exc.status_code,
+            message=exc.message
+        ),
     )
 
 @app.get("/health-check", response_model=BaseResponse)

@@ -9,7 +9,7 @@ from src.api.enum.responses_enum import ResponsesEnum
 class User(BaseModel):
     user_name: str = Field(min_length=1, max_length=256)
     user_phone: str = Field(min_length=11, max_length=11)
-    donation_type: MessageTag
+    tag: MessageTag
 
     @field_validator("user_phone")
     @classmethod
@@ -17,6 +17,9 @@ class User(BaseModel):
         if not user_phone.isdigit():
             raise ValueError("phone number must contain only digits.")
         return user_phone
+
+    class Config:
+        use_enum_values = True
 
 class SendMessages(BaseModel):
     send_to: list[dict[str, Any]]
@@ -39,7 +42,7 @@ class SendMessages(BaseModel):
                 error_details = e.errors()[0]
                 field = error_details["loc"][0]
                 message = error_details["msg"]
-                user["error"] = f"Field \"{field}\": {message}."
+                user["reason"] = f"Field {field}: {message}."
                 invalid_users.append(user)
 
         return valid_users, invalid_users
