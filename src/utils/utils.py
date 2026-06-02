@@ -15,10 +15,10 @@ def api_response(status_code: int, response: BaseResponse) -> JSONResponse:
     )
 
 def format_message_templates(message_templates: list[dict[str, str]]) -> dict[str, list[str]]:
-    formated_messages = {}
+    formatted_messages = {}
     for message_template in message_templates:
         tag = message_template[MessageModel.Cols.tag]
-        if tag not in formated_messages:
-            formated_messages[tag] = []
-        formated_messages[tag].append(message_template[MessageModel.Cols.message_template])
-    return formated_messages
+        if tag not in formatted_messages:
+            formatted_messages[tag] = []
+        formatted_messages[tag].append(message_template[MessageModel.Cols.message_template])
+    return formatted_messages

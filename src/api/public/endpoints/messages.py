@@ -28,13 +28,13 @@ def send_messages(
     twilio_client = Twilio(logger)
 
     messages_templates = supabase_client.get_messages_templates(key_hash=hash_api_key(api_key))
-    formated_messages = format_message_templates(messages_templates)
+    formatted_messages = format_message_templates(messages_templates)
 
     successful_users: list[User] = []
     for user in valid_users:
         hello_string = f"Olá {user.user_name}!\n\n"
 
-        template_list = formated_messages.get(user.tag)
+        template_list = formatted_messages.get(user.tag)
         if not template_list:
             _add_invalid_user(
                 user=user,
