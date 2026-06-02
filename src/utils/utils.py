@@ -1,5 +1,6 @@
 import hashlib
 
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from src.api.base_response import BaseResponse
@@ -11,7 +12,7 @@ def hash_api_key(api_key: str) -> str:
 def api_response(status_code: int, response: BaseResponse) -> JSONResponse:
     return JSONResponse(
         status_code=status_code,
-        content=response.model_dump()
+        content=jsonable_encoder(response)
     )
 
 def format_message_templates(message_templates: list[dict[str, str]]) -> dict[str, list[str]]:

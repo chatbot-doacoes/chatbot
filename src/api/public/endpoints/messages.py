@@ -1,10 +1,9 @@
 import random
 from typing import Any
 
-from fastapi import APIRouter, Request, Header
+from fastapi import APIRouter, Request
 from starlette.responses import JSONResponse
 
-from src.api.base_response import BaseResponse
 from src.api.enum.responses_enum import ResponsesEnum
 from src.api.public.payloads.messages import SendMessages, User
 from src.api.public.responses.messages import MessagesResponse
@@ -17,10 +16,10 @@ router = APIRouter()
 @router.post("/messages", response_model=MessagesResponse)
 def send_messages(
         payload: SendMessages,
-        request: Request,
-        api_key: str = Header(alias="X-API-Key")
+        request: Request
 ) -> JSONResponse:
     valid_users, invalid_users = payload.split_users()
+    api_key = request.headers["X-API-Key"]
 
     logger = request.state.logger
 
