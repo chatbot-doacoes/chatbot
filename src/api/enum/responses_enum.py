@@ -24,9 +24,9 @@ class ResponsesEnum(Enum):
     # --- Server Error Responses (5xx) ---
     FAILED_TO_FETCH_INSTITUTIONS = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to fetch institutions.")
     FAILED_TO_UPDATE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to update institution.")
+    FAILED_TO_CREATE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to create institution.")
     FAILED_TO_FETCH_MESSAGES = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to fetch messages.")
     FAILED_TO_CREATE_MESSAGE = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to create message.")
-
 
     def __init__(self, status_code: int, message: str):
         self._status_code = status_code
