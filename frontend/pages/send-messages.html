@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+
+    <title>Enviar Mensagens</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="container mt-4">
+      <h1>Enviar Mensagens</h1>
+
+      <hr />
+
+      <form id="sendMessagesForm">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>Tag</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody id="usersTable"></tbody>
+        </table>
+
+        <button type="button" class="btn btn-secondary" onclick="addUserRow()">
+          + Adicionar Destinatário
+        </button>
+
+        <button type="submit" class="btn btn-success">Enviar Mensagens</button>
+      </form>
+
+      <hr />
+
+      <div id="result"></div>
+    </div>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/send-messages.js"></script>
+  </body>
+</html>
