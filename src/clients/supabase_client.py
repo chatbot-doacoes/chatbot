@@ -173,7 +173,6 @@ class Supabase:
 
     def delete_message(
         self,
-        institution_id: str,
         message_id: str
     ) -> bool:
 
@@ -185,7 +184,6 @@ class Supabase:
             self.client.table(MessageModel.TABLE_NAME)
             .delete()
             .eq(MessageModel.Cols.id, message_id)
-            .eq(MessageModel.Cols.institution_id, institution_id)
             .execute()
         )
 
@@ -195,7 +193,6 @@ class Supabase:
 
     def update_message(
         self,
-        institution_id: str,
         message_id: str,
         data: dict
     ) -> MessageModel:
@@ -212,7 +209,6 @@ class Supabase:
             self.client.table(MessageModel.TABLE_NAME)
             .update(data)
             .eq(MessageModel.Cols.id, message_id)
-            .eq(MessageModel.Cols.institution_id, institution_id)
             .execute()
         )
 
