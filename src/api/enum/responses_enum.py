@@ -8,8 +8,11 @@ class ResponsesEnum(Enum):
     INSTITUTIONS_FETCHED = (status.HTTP_200_OK, "Successfully fetched institutions.")
     INSTITUTION_CREATED = (status.HTTP_201_CREATED, "Institution created successfully.")
     INSTITUTION_UPDATED = (status.HTTP_200_OK, "Institution updated successfully.")
+    INSTITUTION_DELETED = (status.HTTP_200_OK, "Institution deleted successfully.")
     MESSAGES_FETCHED = (status.HTTP_200_OK, "Successfully fetched messages.")
     MESSAGE_CREATED = (status.HTTP_201_CREATED, "Message created successfully.")
+    MESSAGE_DELETED = (status.HTTP_200_OK, "Message deleted successfully.")
+    MESSAGE_UPDATED = (status.HTTP_200_OK, "Message updated successfully.")
     ALL_USERS_VALID = (status.HTTP_200_OK, "All messages were sent successfully.")
     PARTIALLY_USERS_VALID = (status.HTTP_207_MULTI_STATUS, "Some messages could not be sent.")
 
@@ -25,9 +28,12 @@ class ResponsesEnum(Enum):
     FAILED_TO_FETCH_INSTITUTIONS = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to fetch institutions.")
     FAILED_TO_UPDATE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to update institution.")
     FAILED_TO_CREATE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to create institution.")
+    FAILED_TO_DELETE_INSTITUTION = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to delete institution.")
     FAILED_TO_FETCH_MESSAGES = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to fetch messages.")
     FAILED_TO_CREATE_MESSAGE = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to create message.")
-
+    FAILED_TO_DELETE_MESSAGE = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to delete message.")
+    FAILED_TO_UPDATE_MESSAGE = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to update message.")
+    
     def __init__(self, status_code: int, message: str):
         self._status_code = status_code
         self._message = message
