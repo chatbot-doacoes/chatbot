@@ -77,7 +77,7 @@ def get_messages(institution_id: UUID, request: Request) -> JSONResponse:
     )
 
 @router.delete(
-    "/institutions/messages/{message_id}",
+    "/messages/{message_id}",
     response_model=BaseResponse
 )
 def delete_message(
@@ -118,7 +118,7 @@ def delete_message(
     )
 
 @router.patch(
-    "/institutions/messages/{message_id}",
+    "/messages/{message_id}",
     response_model=UpdateMessageResponse
 )
 def update_message(
