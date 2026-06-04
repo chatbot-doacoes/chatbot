@@ -171,3 +171,25 @@ class Supabase:
             raise Exception(f"Institution '{institution_id}' not found")
         return InstitutionModel.model_validate(result[0])
 
+    def delete_message(
+        self,
+        institution_id: str,
+        message_id: str
+    ) -> bool:
+
+        self.logger.add_step(
+            f"Trying to delete message '{message_id}'."
+        )
+
+        response = (
+            self.client.table(MessageModel.TABLE_NAME)
+            .delete()
+            .eq(MessageModel.Cols.id, message_id)
+            .eq(MessageModel.Cols.institution_id, institution_id)
+            .execute()
+        )
+
+        data = getattr(response, "data", None)
+
+        return bool(data)
+
