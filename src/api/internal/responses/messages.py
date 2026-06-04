@@ -4,3 +4,6 @@ from src.models.message import MessageModel
 
 class GetAllMessagesResponse(BaseResponse):
     messages: list[MessageModel]
+
+class UpdateMessageResponse(BaseResponse):
+    message_data: MessageModel

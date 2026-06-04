@@ -171,7 +171,6 @@ class Supabase:
             raise Exception(f"Institution '{institution_id}' not found")
         return InstitutionModel.model_validate(result[0])
 
-<<<<<<< HEAD
     def delete_message(
         self,
         institution_id: str,
@@ -194,7 +193,38 @@ class Supabase:
 
         return bool(data)
 
-=======
+    def update_message(
+        self,
+        institution_id: str,
+        message_id: str,
+        data: dict
+    ) -> MessageModel:
+
+        self.logger.add_step(
+            f"Trying to update message '{message_id}'."
+        )
+
+        data[MessageModel.Cols.update_at] = (
+            datetime.now(timezone.utc).isoformat()
+        )
+
+        response = (
+            self.client.table(MessageModel.TABLE_NAME)
+            .update(data)
+            .eq(MessageModel.Cols.id, message_id)
+            .eq(MessageModel.Cols.institution_id, institution_id)
+            .execute()
+        )
+
+        result = getattr(response, "data", None)
+
+        if not result or not isinstance(result, list):
+            raise Exception(
+                f"Message '{message_id}' not found."
+            )
+
+        return MessageModel.model_validate(result[0])
+
     def delete_institution(self,institution_id: str) -> InstitutionModel:
 
         self.logger.add_step(f"Trying to delete institution '{institution_id}'.")
@@ -214,4 +244,3 @@ class Supabase:
             )
 
         return InstitutionModel.model_validate(result[0])
->>>>>>> origin/dev
