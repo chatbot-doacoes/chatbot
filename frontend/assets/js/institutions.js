@@ -1,5 +1,6 @@
 let editingInstitutionId = null;
 let deletingInstitutionId = null;
+let deletingInstitutionName = null;
 
 async function loadInstitutions() {
   const response = await fetch(`${API_URL}/internal/institutions`, {
@@ -56,7 +57,10 @@ function renderInstitutions(institutions) {
 
                     <button
                       class="btn btn-danger btn-sm"
-                      onclick="deleteInstitution('${institution.id}')"
+                      onclick="deleteInstitution(
+                        '${institution.id}',
+                        \`${institution.institution_name}\`
+                      )"
                     >
                       Excluir
                     </button>
@@ -163,8 +167,12 @@ function resetInstitutionForm() {
   document.getElementById("cancelEditButton").classList.add("d-none");
 }
 
-async function deleteInstitution(institutionId) {
+function deleteInstitution(institutionId, institutionName) {
   deletingInstitutionId = institutionId;
+  deletingInstitutionName = institutionName;
+
+  document.getElementById("deleteInstitutionName").textContent =
+    institutionName;
 
   document.getElementById("deleteConfirmation").classList.remove("d-none");
 
@@ -188,6 +196,7 @@ async function confirmDeleteInstitution() {
   });
 
   deletingInstitutionId = null;
+  deletingInstitutionName = null;
 
   document.getElementById("deleteConfirmation").classList.add("d-none");
 
@@ -196,6 +205,9 @@ async function confirmDeleteInstitution() {
 
 function cancelDeleteInstitution() {
   deletingInstitutionId = null;
+  deletingInstitutionName = null;
+
+  document.getElementById("deleteInstitutionName").textContent = "";
 
   document.getElementById("deleteConfirmation").classList.add("d-none");
 }

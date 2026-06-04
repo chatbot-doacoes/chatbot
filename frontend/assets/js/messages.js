@@ -1,4 +1,6 @@
 let editingMessageId = null;
+let deletingMessageId = null;
+let deletingMessageTag = null;
 
 const TAG_LABELS = {
   food: "Alimentos",
@@ -80,7 +82,10 @@ function renderMessages(messages) {
 
             <button
               class="btn btn-danger btn-sm"
-              onclick="deleteMessage('${message.id}')"
+              onclick="deleteMessage(
+                '${message.id}',
+                '${message.tag}'
+              )"
             >
               Excluir
             </button>
@@ -137,14 +142,21 @@ async function createMessage(event) {
   loadMessages();
 }
 
-async function deleteMessage(messageId) {
-  const confirmed = confirm("Deseja realmente excluir este template?");
+function deleteMessage(messageId, tag) {
+  deletingMessageId = messageId;
 
-  if (!confirmed) {
+  document.getElementById("deleteConfirmationText").innerHTML =
+    `Tem certeza que deseja excluir o template de <strong>${TAG_LABELS[tag]}</strong>?`;
+
+  document.getElementById("deleteConfirmation").classList.remove("d-none");
+}
+
+async function confirmDeleteMessage() {
+  if (!deletingMessageId) {
     return;
   }
 
-  await fetch(`${API_URL}/internal/messages/${messageId}`, {
+  await fetch(`${API_URL}/internal/messages/${deletingMessageId}`, {
     method: "DELETE",
 
     headers: {
@@ -152,7 +164,17 @@ async function deleteMessage(messageId) {
     },
   });
 
+  deletingMessageId = null;
+
+  document.getElementById("deleteConfirmation").classList.add("d-none");
+
   loadMessages();
+}
+
+function cancelDeleteMessage() {
+  deletingMessageId = null;
+
+  document.getElementById("deleteConfirmation").classList.add("d-none");
 }
 
 function editMessage(messageId, currentTag, currentTemplate) {
@@ -200,5 +222,13 @@ document
 document
   .getElementById("cancelEditButton")
   .addEventListener("click", resetMessageForm);
+
+document
+  .getElementById("confirmDeleteButton")
+  .addEventListener("click", confirmDeleteMessage);
+
+document
+  .getElementById("cancelDeleteButton")
+  .addEventListener("click", cancelDeleteMessage);
 
 loadInstitutions();
