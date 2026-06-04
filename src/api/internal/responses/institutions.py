@@ -7,3 +7,6 @@ class GetAllInstitutionsResponse(BaseResponse):
 
 class UpdateInstitutionResponse(BaseResponse):
     institution: InstitutionModel
+
+class DeleteInstitutionResponse(BaseResponse):
+    institution: InstitutionModel
