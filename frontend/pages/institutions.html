@@ -17,7 +17,7 @@
 
       <hr />
 
-      <h3>Nova Instituição</h3>
+      <h3 id="formTitle">Nova Instituição</h3>
 
       <form id="institutionForm">
         <div class="mb-3">
@@ -32,12 +32,42 @@
           <input id="keyHash" class="form-control" required />
         </div>
 
-        <button type="submit" class="btn btn-primary">Cadastrar</button>
+        <button
+          id="submitInstitutionButton"
+          type="submit"
+          class="btn btn-primary"
+        >
+          Cadastrar
+        </button>
+
+        <button
+          id="cancelEditButton"
+          type="button"
+          class="btn btn-secondary ms-2 d-none"
+        >
+          Cancelar Edição
+        </button>
       </form>
 
       <hr />
 
       <h3>Instituições Cadastradas</h3>
+
+      <div
+        id="deleteConfirmation"
+        class="alert alert-danger d-none"
+        role="alert"
+      >
+        <p class="mb-3">Tem certeza que deseja excluir esta instituição?</p>
+
+        <button id="confirmDeleteButton" class="btn btn-danger btn-sm">
+          Confirmar Exclusão
+        </button>
+
+        <button id="cancelDeleteButton" class="btn btn-secondary btn-sm ms-2">
+          Cancelar
+        </button>
+      </div>
 
       <table class="table">
         <thead>
