@@ -77,11 +77,10 @@ def get_messages(institution_id: UUID, request: Request) -> JSONResponse:
     )
 
 @router.delete(
-    "/institutions/{institution_id}/messages/{message_id}",
+    "/institutions/messages/{message_id}",
     response_model=BaseResponse
 )
 def delete_message(
-    institution_id: UUID,
     message_id: UUID,
     request: Request
 ) -> JSONResponse:
@@ -91,7 +90,6 @@ def delete_message(
     try:
 
         deleted = supabase_client.delete_message(
-            institution_id=str(institution_id),
             message_id=str(message_id)
         )
 
@@ -120,11 +118,10 @@ def delete_message(
     )
 
 @router.patch(
-    "/institutions/{institution_id}/messages/{message_id}",
+    "/institutions/messages/{message_id}",
     response_model=UpdateMessageResponse
 )
 def update_message(
-    institution_id: UUID,
     message_id: UUID,
     payload: UpdateMessage,
     request: Request
@@ -146,7 +143,6 @@ def update_message(
     try:
 
         message = supabase_client.update_message(
-            institution_id=str(institution_id),
             message_id=str(message_id),
             data=update_data
         )
