@@ -240,3 +240,19 @@ class Supabase:
             )
 
         return InstitutionModel.model_validate(result[0])
+    
+    def get_user(self, username: str) -> str | None:
+        try:
+            response = (
+                self.client.table("users")
+                .select("hash")
+                .eq("username", username)
+                .execute()
+            )
+            data = getattr(response, "data", None)
+            if not data or not isinstance(data, list):
+                return None
+            print(response)
+            return response.data[0].get("hash")
+        except Exception as e:
+            return None
