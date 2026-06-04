@@ -1,5 +1,6 @@
 import hashlib
 
+import bcrypt
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
@@ -23,3 +24,10 @@ def format_message_templates(message_templates: list[dict[str, str]]) -> dict[st
             formatted_messages[tag] = []
         formatted_messages[tag].append(message_template[MessageModel.Cols.message_template])
     return formatted_messages
+
+def check_password(password: str, password_hash: bytes) -> bool:
+    password_bytes = password.encode("utf-8")
+    if bcrypt.checkpw(password_bytes, password_hash):
+        return True
+    else:
+        return False
