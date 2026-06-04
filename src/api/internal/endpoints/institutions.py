@@ -5,7 +5,7 @@ from src.models.institution import InstitutionModel
 from src.api.base_response import BaseResponse
 from src.api.enum.responses_enum import ResponsesEnum
 from src.api.exceptions import APIException
-from src.api.internal.responses.institutions import GetAllInstitutionsResponse, UpdateInstitutionResponse
+from src.api.internal.responses.institutions import GetAllInstitutionsResponse, UpdateInstitutionResponse, DeleteInstitutionResponse
 from src.api.internal.payloads.institutions import RegisterInstitution, UpdateInstitution
 from src.clients.supabase_client import Supabase
 from uuid import UUID
@@ -238,3 +238,72 @@ def update_institution(
             institution=institution
     ))
 
+@router.delete(
+    "/institutions/{institution_id}",
+    response_model=DeleteInstitutionResponse,
+    responses={
+        ResponsesEnum.INSTITUTION_DELETED.status_code: {
+            "model": DeleteInstitutionResponse,
+            "description": ResponsesEnum.INSTITUTION_DELETED.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.INSTITUTION_DELETED.status_code,
+                        "message": ResponsesEnum.INSTITUTION_DELETED.message,
+                        "institution": {
+                            "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+                            "institution_name": "Institution 1",
+                            "is_active": True,
+                            "created_at": "2023-10-27T10:00:00Z",
+                            "update_at": "2023-10-27T10:00:00Z"
+                        }
+                    }
+                }
+            }
+        },
+
+        ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.status_code: {
+            "model": BaseResponse,
+            "description": ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.message,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status_code": ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.status_code,
+                        "message": ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.message
+                    }
+                }
+            }
+        }
+    },
+)
+def delete_institution(
+    institution_id: UUID,
+    request: Request
+) -> DeleteInstitutionResponse:
+
+    logger = request.state.logger
+
+    supabase_client = Supabase(logger)
+
+    try:
+
+        institution = supabase_client.delete_institution(
+            institution_id=str(institution_id)
+        )
+
+    except Exception as e:
+
+        logger.add_step(
+            f"Failed to delete institution: {str(e)}"
+        )
+
+        raise APIException(
+            status_code=ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.status_code,
+            message=ResponsesEnum.FAILED_TO_DELETE_INSTITUTION.message
+        )
+
+    return DeleteInstitutionResponse(
+        status_code=ResponsesEnum.INSTITUTION_DELETED.status_code,
+        message=ResponsesEnum.INSTITUTION_DELETED.message,
+        institution=institution
+    )
