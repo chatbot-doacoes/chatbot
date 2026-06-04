@@ -75,3 +75,46 @@ def get_messages(institution_id: UUID, request: Request) -> JSONResponse:
             messages=messages
         )
     )
+
+@router.delete(
+    "/institutions/{institution_id}/messages/{message_id}",
+    response_model=BaseResponse
+)
+def delete_message(
+    institution_id: UUID,
+    message_id: UUID,
+    request: Request
+) -> JSONResponse:
+
+    supabase_client = Supabase(request.state.logger)
+
+    try:
+
+        deleted = supabase_client.delete_message(
+            institution_id=str(institution_id),
+            message_id=str(message_id)
+        )
+
+        if not deleted:
+            raise Exception(
+                "Message not found."
+            )
+
+    except Exception as e:
+
+        request.state.logger.add_step(
+            f"Failed to delete message: {str(e)}"
+        )
+
+        raise APIException(
+            status_code=ResponsesEnum.FAILED_TO_DELETE_MESSAGE.status_code,
+            message=ResponsesEnum.FAILED_TO_DELETE_MESSAGE.message
+        )
+
+    return api_response(
+        status_code=ResponsesEnum.MESSAGE_DELETED.status_code,
+        response=BaseResponse(
+            status_code=ResponsesEnum.MESSAGE_DELETED.status_code,
+            message=ResponsesEnum.MESSAGE_DELETED.message
+        )
+    )
