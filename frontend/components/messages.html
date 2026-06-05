@@ -1,0 +1,82 @@
+<div class="page-header">
+  <h2>Templates de Mensagens</h2>
+</div>
+
+<div class="form-section">
+  <div class="mb-4">
+    <label class="form-label"> Instituição </label>
+
+    <select id="institutionSelect" class="form-select"></select>
+  </div>
+
+  <hr />
+
+  <h3 id="formTitle">Novo Template</h3>
+
+  <form id="messageForm">
+    <div class="mb-3">
+      <label class="form-label"> Tag </label>
+
+      <select id="messageTag" class="form-select">
+        <option value="food">Alimentos</option>
+        <option value="clothing">Roupas</option>
+        <option value="diapers">Fraldas</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label"> Mensagem </label>
+
+      <textarea
+        id="messageTemplate"
+        class="form-control"
+        rows="6"
+        required
+      ></textarea>
+    </div>
+
+    <button id="submitMessageButton" type="submit" class="btn btn-primary">
+      Cadastrar
+    </button>
+
+    <button
+      id="cancelEditButton"
+      type="button"
+      class="btn btn-secondary ms-2 d-none"
+    >
+      Cancelar Edição
+    </button>
+  </form>
+
+  <hr />
+
+  <hr />
+
+  <div id="deleteConfirmation" class="alert alert-danger d-none" role="alert">
+    <p id="deleteConfirmationText" class="mb-3">
+      Tem certeza que deseja excluir este template?
+    </p>
+
+    <button id="confirmDeleteButton" class="btn btn-danger btn-sm">
+      Confirmar Exclusão
+    </button>
+
+    <button id="cancelDeleteButton" class="btn btn-secondary btn-sm ms-2">
+      Cancelar
+    </button>
+  </div>
+
+  <h3>Templates Cadastrados</h3>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Tag</th>
+        <th>Mensagem</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+
+    <tbody id="messagesTable"></tbody>
+  </table>
+</div>

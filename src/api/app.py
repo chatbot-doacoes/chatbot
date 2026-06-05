@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.base_response import BaseResponse
 from src.api.enum.responses_enum import ResponsesEnum
@@ -11,6 +12,15 @@ from src.api.exceptions import APIException
 from src.utils.utils import api_response
 
 app = FastAPI(title="Chatbot API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5500",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 set_logging_middleware(app)
 set_ip_allowlist(app)
 

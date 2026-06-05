@@ -5,3 +5,7 @@ class RegisterMessage(BaseModel):
     tag: MessageTag
     message_template: str
     donation_url: HttpUrl
+
+class UpdateMessage(BaseModel):
+    tag: MessageTag | None = None
+    message_template: str | None = None

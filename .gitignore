@@ -30,3 +30,6 @@ htmlcov/
 # Arquivos de sistema
 *.swp
 *.swo
+
+# Configuração local do frontend
+frontend/assets/js/config.js
