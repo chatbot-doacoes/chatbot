@@ -88,7 +88,49 @@ body {
 
 .app-content {
   flex: 1;
-  padding: 20px;
+  padding: 30px;
+  overflow-y: auto;
+  height: calc(100vh - 64px);
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  font-weight: 600;
+  color: var(--green-dark);
+}
+
+.dashboard-card {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition: 0.2s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+}
+
+.card {
+  border-radius: 14px;
+}
+
+.table {
+  background: white;
+}
+
+.form-section {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  color: var(--green-dark);
+  margin-bottom: 20px;
 }
 
 /* RESPONSIVO */

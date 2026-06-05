@@ -1,0 +1,34 @@
+<div class="page-header">
+  <h2>Enviar Mensagens</h2>
+</div>
+
+<div class="form-section">
+  <form id="sendMessagesForm">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>Tag</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody id="usersTable"></tbody>
+    </table>
+
+    <button
+      type="button"
+      class="btn btn-secondary"
+      onclick="SendMessagesPage.addUserRow()"
+    >
+      Adicionar Destinatário
+    </button>
+
+    <button type="submit" class="btn btn-success">Enviar Mensagens</button>
+  </form>
+
+  <hr />
+
+  <div id="result"></div>
+</div>
