@@ -31,9 +31,9 @@ def login(payload: User, request: Request) -> JSONResponse:
         password=payload.password,
         password_hash=password_hash_bytes
     ):
-        return JSONResponse(
+        return api_response(
             status_code=ResponsesEnum.AUTHENTICATION_FAILED.status_code,
-            content=BaseResponse(
+            response=BaseResponse(
                 status_code=ResponsesEnum.AUTHENTICATION_FAILED.status_code,
                 message=ResponsesEnum.AUTHENTICATION_FAILED.message
             )
