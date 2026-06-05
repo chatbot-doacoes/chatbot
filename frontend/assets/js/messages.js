@@ -73,6 +73,16 @@ window.MessagesPage = (() => {
           <td>${message.message_template}</td>
 
           <td>
+            ${
+              message.donation_url
+                ? `<a href="${message.donation_url}" target="_blank">
+                    ${message.donation_url}
+                  </a>`
+                : '<span class="text-muted">Vazio</span>'
+            }
+          </td>
+
+          <td>
             <div class="d-flex gap-2">
 
               <button
@@ -80,7 +90,8 @@ window.MessagesPage = (() => {
                 onclick="MessagesPage.editMessage(
                   '${message.id}',
                   '${message.tag}',
-                  \`${message.message_template}\`
+                  \`${message.message_template}\`,
+                  '${message.donation_url ?? ""}'
                 )"
               >
                 Editar
@@ -113,6 +124,8 @@ window.MessagesPage = (() => {
 
     const messageTemplate = document.getElementById("messageTemplate").value;
 
+    const donationUrl = document.getElementById("donationUrl").value;
+
     if (editingMessageId) {
       await fetch(`${API_URL}/internal/messages/${editingMessageId}`, {
         method: "PATCH",
@@ -123,6 +136,7 @@ window.MessagesPage = (() => {
         body: JSON.stringify({
           tag,
           message_template: messageTemplate,
+          donation_url: donationUrl,
         }),
       });
     } else {
@@ -137,6 +151,7 @@ window.MessagesPage = (() => {
           body: JSON.stringify({
             tag,
             message_template: messageTemplate,
+            donation_url: donationUrl,
           }),
         },
       );
@@ -179,7 +194,12 @@ window.MessagesPage = (() => {
     document.getElementById("deleteConfirmation").classList.add("d-none");
   }
 
-  function editMessage(messageId, currentTag, currentTemplate) {
+  function editMessage(
+    messageId,
+    currentTag,
+    currentTemplate,
+    currentDonationUrl,
+  ) {
     editingMessageId = messageId;
 
     document.getElementById("formTitle").textContent = "Editar Template";
@@ -187,6 +207,8 @@ window.MessagesPage = (() => {
     document.getElementById("messageTag").value = currentTag;
 
     document.getElementById("messageTemplate").value = currentTemplate;
+
+    document.getElementById("donationUrl").value = currentDonationUrl;
 
     document.getElementById("submitMessageButton").textContent =
       "Salvar Alterações";
@@ -202,6 +224,8 @@ window.MessagesPage = (() => {
     document.getElementById("messageTag").value = "food";
 
     document.getElementById("messageTemplate").value = "";
+
+    document.getElementById("donationUrl").value = "";
 
     document.getElementById("submitMessageButton").textContent = "Cadastrar";
 

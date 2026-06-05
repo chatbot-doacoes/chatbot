@@ -9,3 +9,4 @@ class RegisterMessage(BaseModel):
 class UpdateMessage(BaseModel):
     tag: MessageTag | None = None
     message_template: str | None = None
+    donation_url: HttpUrl | None = None
