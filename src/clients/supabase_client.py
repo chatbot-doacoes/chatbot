@@ -3,6 +3,8 @@ from datetime import datetime, timezone
 
 from supabase import Client, create_client
 from uuid import UUID
+
+from src.models.users import Users
 from src.utils.logger import Logger
 from src.config.environment import Environment
 from src.utils.ttl_cache import TTLCache
@@ -244,15 +246,14 @@ class Supabase:
     def get_user(self, username: str) -> str | None:
         try:
             response = (
-                self.client.table("users")
-                .select("hash")
-                .eq("username", username)
+                self.client.table(Users.TABLE_NAME)
+                .select(Users.Cols.hash)
+                .eq(Users.Cols.username, username)
                 .execute()
             )
             data = getattr(response, "data", None)
             if not data or not isinstance(data, list):
                 return None
-            print(response)
-            return response.data[0].get("hash")
+            return response.data[0].get(Users.Cols.hash)
         except Exception as e:
             return None

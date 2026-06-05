@@ -15,6 +15,7 @@ class ResponsesEnum(Enum):
     MESSAGE_UPDATED = (status.HTTP_200_OK, "Message updated successfully.")
     ALL_USERS_VALID = (status.HTTP_200_OK, "All messages were sent successfully.")
     PARTIALLY_USERS_VALID = (status.HTTP_207_MULTI_STATUS, "Some messages could not be sent.")
+    AUTHENTICATION_SUCCESS = (status.HTTP_200_OK, "Authenticated successfully.")
 
     # --- Error Responses (4xx) ---
     IP_NOT_ALLOWED = (status.HTTP_403_FORBIDDEN, "IP not allowed.")
@@ -23,6 +24,7 @@ class ResponsesEnum(Enum):
     NO_FIELDS_TO_UPDATE = (status.HTTP_400_BAD_REQUEST, "No fields to update.")
     INVALID_FIELDS = (status.HTTP_422_UNPROCESSABLE_ENTITY, "The request body has invalid fields.")
     ALL_USERS_INVALID = (status.HTTP_422_UNPROCESSABLE_ENTITY, "No messages were sent.")
+    AUTHENTICATION_FAILED = (status.HTTP_401_UNAUTHORIZED, "Incorrect username or password.")
 
     # --- Server Error Responses (5xx) ---
     FAILED_TO_FETCH_INSTITUTIONS = (status.HTTP_500_INTERNAL_SERVER_ERROR, "Failed to fetch institutions.")
