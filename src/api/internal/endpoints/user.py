@@ -16,21 +16,7 @@ def login(payload: User, request: Request) -> JSONResponse:
     supabase_client = Supabase(logger)
 
     password_hash = supabase_client.get_user(payload.username)
-    if not password_hash:
-        return api_response(
-            status_code=ResponsesEnum.AUTHENTICATION_FAILED.status_code,
-            response=BaseResponse(
-                status_code=ResponsesEnum.AUTHENTICATION_FAILED.status_code,
-                message=ResponsesEnum.AUTHENTICATION_FAILED.message
-            )
-        )
-
-    password_hash_bytes = password_hash.encode("utf-8")
-
-    if not check_password(
-        password=payload.password,
-        password_hash=password_hash_bytes
-    ):
+    if not password_hash or not check_password(password=payload.password, password_hash=password_hash):
         return api_response(
             status_code=ResponsesEnum.AUTHENTICATION_FAILED.status_code,
             response=BaseResponse(
