@@ -51,6 +51,34 @@
       .logo-white {
         fill: white;
       }
+
+      .right-panel {
+        height: 100vh;
+        overflow: hidden;
+        box-shadow: -20px 0 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .right-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .login-image {
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+        object-fit: cover;
+        object-position: 25% center;
+      }
+
+      .image-footer {
+        flex-shrink: 0;
+        background-color: #2e7d32;
+        color: white;
+        padding: 25px;
+        text-align: center;
+      }
     </style>
   </head>
 
@@ -153,14 +181,32 @@
         </div>
 
         <!-- Lado direito -->
+        <!-- Lado direito -->
         <div
-          class="col-md-6 d-none d-md-flex align-items-center justify-content-center text-white"
-          style="background-color: #2e7d32"
+          class="col-md-6 d-none d-md-block p-0 d-flex flex-column right-panel"
         >
-          <div class="text-center px-5">
-            <h1 class="fw-bold mb-3">Placeholder</h1>
+          <div class="right-content">
+            <img
+              src="../assets/images/login-image.jpg"
+              alt="Imagem institucional"
+              class="login-image"
+            />
 
-            <p class="lead">Espaço reservado para imagem institucional</p>
+            <div class="image-footer">
+              <div class="footer-text-top">
+                <strong
+                  >Deixe as pessoas que apoiam sua instituição por dentro das
+                  campanhas de doação.</strong
+                >
+              </div>
+
+              <div class="footer-text-bottom" style="margin-top: 10px">
+                <strong
+                  >Pelo WhatsApp, você alcança seus doadores no lugar onde eles
+                  estão, de forma rápida e prática.</strong
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
