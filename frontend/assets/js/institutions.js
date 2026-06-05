@@ -1,231 +1,232 @@
-let editingInstitutionId = null;
-let deletingInstitutionId = null;
-let deletingInstitutionName = null;
+window.InstitutionsPage = (() => {
+  let editingInstitutionId = null;
+  let deletingInstitutionId = null;
+  let deletingInstitutionName = null;
 
-async function loadInstitutions() {
-  const response = await fetch(`${API_URL}/internal/institutions`, {
-    headers: {
-      "X-API-Key": INTERNAL_API_KEY,
-    },
-  });
+  async function loadInstitutions() {
+    const response = await fetch(`${API_URL}/internal/institutions`, {
+      headers: {
+        "X-API-Key": INTERNAL_API_KEY,
+      },
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  renderInstitutions(data.institutions);
-}
+    renderInstitutions(data.institutions);
+  }
 
-function renderInstitutions(institutions) {
-  const table = document.getElementById("institutionsTable");
+  function renderInstitutions(institutions) {
+    const table = document.getElementById("institutionsTable");
 
-  table.innerHTML = "";
+    if (!table) return;
 
-  institutions.forEach((institution) => {
-    table.innerHTML += `
-            <tr>
+    table.innerHTML = "";
 
-                <td>
-                    ${institution.institution_name}
-                </td>
+    institutions.forEach((institution) => {
+      table.innerHTML += `
+        <tr>
 
-                <td>
-                    ${institution.is_active ? "Ativa" : "Inativa"}
-                </td>
+          <td>${institution.institution_name}</td>
 
-                <td>
-                  <div class="d-flex gap-2">
+          <td>
+            ${institution.is_active ? "Ativa" : "Inativa"}
+          </td>
 
-                    <button
-                      class="btn btn-primary btn-sm"
-                      onclick="editInstitution(
-                        '${institution.id}',
-                        \`${institution.institution_name}\`,
-                        ${institution.is_active}
-                      )"
-                    >
-                      Editar
-                    </button>
+          <td>
+            <div class="d-flex gap-2">
 
-                    <button
-                      class="btn btn-warning btn-sm"
-                      onclick="toggleInstitution(
-                        '${institution.id}',
-                        ${institution.is_active}
-                      )"
-                    >
-                      ${institution.is_active ? "Desativar" : "Ativar"}
-                    </button>
+              <button
+                class="btn btn-primary btn-sm"
+                onclick="InstitutionsPage.editInstitution(
+                  '${institution.id}',
+                  \`${institution.institution_name}\`,
+                  ${institution.is_active}
+                )"
+              >
+                Editar
+              </button>
 
-                    <button
-                      class="btn btn-danger btn-sm"
-                      onclick="deleteInstitution(
-                        '${institution.id}',
-                        \`${institution.institution_name}\`
-                      )"
-                    >
-                      Excluir
-                    </button>
+              <button
+                class="btn btn-warning btn-sm"
+                onclick="InstitutionsPage.toggleInstitution(
+                  '${institution.id}',
+                  ${institution.is_active}
+                )"
+              >
+                ${institution.is_active ? "Desativar" : "Ativar"}
+              </button>
 
-                  </div>
-                </td>
+              <button
+                class="btn btn-danger btn-sm"
+                onclick="InstitutionsPage.deleteInstitution(
+                  '${institution.id}',
+                  \`${institution.institution_name}\`
+                )"
+              >
+                Excluir
+              </button>
 
-            </tr>
-        `;
-  });
-}
+            </div>
+          </td>
 
-async function createInstitution(event) {
-  event.preventDefault();
+        </tr>
+      `;
+    });
+  }
 
-  const institution_name = document.getElementById("institutionName").value;
+  async function createInstitution(event) {
+    event.preventDefault();
 
-  const key_hash = document.getElementById("keyHash").value;
+    const institution_name = document.getElementById("institutionName").value;
 
-  if (editingInstitutionId) {
-    await fetch(`${API_URL}/internal/institutions/${editingInstitutionId}`, {
+    const key_hash = document.getElementById("keyHash").value;
+
+    if (editingInstitutionId) {
+      await fetch(`${API_URL}/internal/institutions/${editingInstitutionId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": INTERNAL_API_KEY,
+        },
+        body: JSON.stringify({
+          institution_name,
+        }),
+      });
+    } else {
+      await fetch(`${API_URL}/internal/institutions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": INTERNAL_API_KEY,
+        },
+        body: JSON.stringify({
+          institution_name,
+          key_hash,
+        }),
+      });
+    }
+
+    resetInstitutionForm();
+
+    await loadInstitutions();
+  }
+
+  async function toggleInstitution(institutionId, currentStatus) {
+    await fetch(`${API_URL}/internal/institutions/${institutionId}`, {
       method: "PATCH",
-
       headers: {
         "Content-Type": "application/json",
         "X-API-Key": INTERNAL_API_KEY,
       },
-
       body: JSON.stringify({
-        institution_name,
+        is_active: !currentStatus,
       }),
     });
-  } else {
-    await fetch(`${API_URL}/internal/institutions`, {
-      method: "POST",
 
+    await loadInstitutions();
+  }
+
+  function editInstitution(institutionId, institutionName) {
+    editingInstitutionId = institutionId;
+
+    document.getElementById("keyHash").disabled = true;
+
+    document.getElementById("institutionName").value = institutionName;
+
+    document.getElementById("formTitle").textContent = "Editar Instituição";
+
+    document.getElementById("submitInstitutionButton").textContent =
+      "Salvar Alterações";
+
+    document.getElementById("cancelEditButton").classList.remove("d-none");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  function resetInstitutionForm() {
+    editingInstitutionId = null;
+
+    document.getElementById("keyHash").disabled = false;
+
+    document.getElementById("institutionName").value = "";
+    document.getElementById("keyHash").value = "";
+
+    document.getElementById("formTitle").textContent = "Nova Instituição";
+
+    document.getElementById("submitInstitutionButton").textContent =
+      "Cadastrar";
+
+    document.getElementById("cancelEditButton").classList.add("d-none");
+  }
+
+  function deleteInstitution(institutionId, institutionName) {
+    deletingInstitutionId = institutionId;
+    deletingInstitutionName = institutionName;
+
+    document.getElementById("deleteInstitutionName").textContent =
+      institutionName;
+
+    document.getElementById("deleteConfirmation").classList.remove("d-none");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  async function confirmDeleteInstitution() {
+    if (!deletingInstitutionId) return;
+
+    await fetch(`${API_URL}/internal/institutions/${deletingInstitutionId}`, {
+      method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
         "X-API-Key": INTERNAL_API_KEY,
       },
-
-      body: JSON.stringify({
-        institution_name,
-        key_hash,
-      }),
     });
+
+    deletingInstitutionId = null;
+    deletingInstitutionName = null;
+
+    document.getElementById("deleteConfirmation").classList.add("d-none");
+
+    await loadInstitutions();
   }
 
-  resetInstitutionForm();
+  function cancelDeleteInstitution() {
+    deletingInstitutionId = null;
+    deletingInstitutionName = null;
 
-  loadInstitutions();
-}
+    document.getElementById("deleteInstitutionName").textContent = "";
 
-async function toggleInstitution(institutionId, currentStatus) {
-  await fetch(`${API_URL}/internal/institutions/${institutionId}`, {
-    method: "PATCH",
-
-    headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": INTERNAL_API_KEY,
-    },
-
-    body: JSON.stringify({
-      is_active: !currentStatus,
-    }),
-  });
-
-  loadInstitutions();
-}
-
-function editInstitution(institutionId, institutionName, isActive) {
-  editingInstitutionId = institutionId;
-
-  document.getElementById("keyHash").disabled = true;
-
-  document.getElementById("institutionName").value = institutionName;
-
-  document.getElementById("formTitle").textContent = "Editar Instituição";
-
-  document.getElementById("submitInstitutionButton").textContent =
-    "Salvar Alterações";
-
-  document.getElementById("cancelEditButton").classList.remove("d-none");
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-}
-
-function resetInstitutionForm() {
-  editingInstitutionId = null;
-
-  document.getElementById("keyHash").disabled = false;
-
-  document.getElementById("institutionName").value = "";
-
-  document.getElementById("keyHash").value = "";
-
-  document.getElementById("formTitle").textContent = "Nova Instituição";
-
-  document.getElementById("submitInstitutionButton").textContent = "Cadastrar";
-
-  document.getElementById("cancelEditButton").classList.add("d-none");
-}
-
-function deleteInstitution(institutionId, institutionName) {
-  deletingInstitutionId = institutionId;
-  deletingInstitutionName = institutionName;
-
-  document.getElementById("deleteInstitutionName").textContent =
-    institutionName;
-
-  document.getElementById("deleteConfirmation").classList.remove("d-none");
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-}
-
-async function confirmDeleteInstitution() {
-  if (!deletingInstitutionId) {
-    return;
+    document.getElementById("deleteConfirmation").classList.add("d-none");
   }
 
-  await fetch(`${API_URL}/internal/institutions/${deletingInstitutionId}`, {
-    method: "DELETE",
+  function initialize() {
+    const institutionForm = document.getElementById("institutionForm");
 
-    headers: {
-      "X-API-Key": INTERNAL_API_KEY,
-    },
-  });
+    const cancelEditButton = document.getElementById("cancelEditButton");
 
-  deletingInstitutionId = null;
-  deletingInstitutionName = null;
+    const confirmDeleteButton = document.getElementById("confirmDeleteButton");
 
-  document.getElementById("deleteConfirmation").classList.add("d-none");
+    const cancelDeleteButton = document.getElementById("cancelDeleteButton");
 
-  loadInstitutions();
-}
+    if (!institutionForm) return;
 
-function cancelDeleteInstitution() {
-  deletingInstitutionId = null;
-  deletingInstitutionName = null;
+    institutionForm.onsubmit = createInstitution;
+    cancelEditButton.onclick = resetInstitutionForm;
+    confirmDeleteButton.onclick = confirmDeleteInstitution;
+    cancelDeleteButton.onclick = cancelDeleteInstitution;
 
-  document.getElementById("deleteInstitutionName").textContent = "";
+    loadInstitutions();
+  }
 
-  document.getElementById("deleteConfirmation").classList.add("d-none");
-}
-
-document
-  .getElementById("institutionForm")
-  .addEventListener("submit", createInstitution);
-
-document
-  .getElementById("cancelEditButton")
-  .addEventListener("click", resetInstitutionForm);
-
-document
-  .getElementById("confirmDeleteButton")
-  .addEventListener("click", confirmDeleteInstitution);
-
-document
-  .getElementById("cancelDeleteButton")
-  .addEventListener("click", cancelDeleteInstitution);
-
-loadInstitutions();
+  return {
+    initialize,
+    editInstitution,
+    toggleInstitution,
+    deleteInstitution,
+  };
+})();

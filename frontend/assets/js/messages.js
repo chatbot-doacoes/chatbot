@@ -1,234 +1,235 @@
-let editingMessageId = null;
-let deletingMessageId = null;
-let deletingMessageTag = null;
+window.MessagesPage = (() => {
+  let editingMessageId = null;
+  let deletingMessageId = null;
 
-const TAG_LABELS = {
-  food: "Alimentos",
-  clothing: "Roupas",
-  diapers: "Fraldas",
-};
+  const TAG_LABELS = {
+    food: "Alimentos",
+    clothing: "Roupas",
+    diapers: "Fraldas",
+  };
 
-async function loadInstitutions() {
-  const response = await fetch(`${API_URL}/internal/institutions`, {
-    headers: {
-      "X-API-Key": INTERNAL_API_KEY,
-    },
-  });
+  async function loadInstitutions() {
+    const response = await fetch(`${API_URL}/internal/institutions`, {
+      headers: {
+        "X-API-Key": INTERNAL_API_KEY,
+      },
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  const select = document.getElementById("institutionSelect");
+    const select = document.getElementById("institutionSelect");
 
-  select.innerHTML = "";
+    if (!select) return;
 
-  data.institutions.forEach((institution) => {
-    select.innerHTML += `
-            <option value="${institution.id}">
-                ${institution.institution_name}
-            </option>
-        `;
-  });
+    select.innerHTML = "";
 
-  loadMessages();
-}
+    data.institutions.forEach((institution) => {
+      select.innerHTML += `
+        <option value="${institution.id}">
+          ${institution.institution_name}
+        </option>
+      `;
+    });
 
-async function loadMessages() {
-  const institutionId = document.getElementById("institutionSelect").value;
-
-  if (!institutionId) {
-    return;
+    loadMessages();
   }
 
-  const response = await fetch(
-    `${API_URL}/internal/institutions/${institutionId}/messages`,
-    {
-      headers: {
-        "X-API-Key": INTERNAL_API_KEY,
+  async function loadMessages() {
+    const institutionSelect = document.getElementById("institutionSelect");
+
+    if (!institutionSelect) return;
+
+    const institutionId = institutionSelect.value;
+
+    if (!institutionId) return;
+
+    const response = await fetch(
+      `${API_URL}/internal/institutions/${institutionId}/messages`,
+      {
+        headers: {
+          "X-API-Key": INTERNAL_API_KEY,
+        },
       },
-    },
-  );
+    );
 
-  const data = await response.json();
+    const data = await response.json();
 
-  renderMessages(data.messages);
-}
+    renderMessages(data.messages);
+  }
 
-function renderMessages(messages) {
-  const table = document.getElementById("messagesTable");
+  function renderMessages(messages) {
+    const table = document.getElementById("messagesTable");
 
-  table.innerHTML = "";
+    if (!table) return;
 
-  messages.forEach((message) => {
-    table.innerHTML += `
-      <tr>
+    table.innerHTML = "";
 
-        <td>${TAG_LABELS[message.tag] ?? message.tag}</td>
+    messages.forEach((message) => {
+      table.innerHTML += `
+        <tr>
 
-        <td>${message.message_template}</td>
+          <td>${TAG_LABELS[message.tag] ?? message.tag}</td>
 
-        <td>
-          <div class="d-flex gap-2">
+          <td>${message.message_template}</td>
 
-            <button
-              class="btn btn-warning btn-sm"
-              onclick="editMessage(
-                '${message.id}',
-                '${message.tag}',
-                \`${message.message_template}\`
-              )"
-            >
-              Editar
-            </button>
+          <td>
+            <div class="d-flex gap-2">
 
-            <button
-              class="btn btn-danger btn-sm"
-              onclick="deleteMessage(
-                '${message.id}',
-                '${message.tag}'
-              )"
-            >
-              Excluir
-            </button>
+              <button
+                class="btn btn-warning btn-sm"
+                onclick="MessagesPage.editMessage(
+                  '${message.id}',
+                  '${message.tag}',
+                  \`${message.message_template}\`
+                )"
+              >
+                Editar
+              </button>
 
-          </div>
-        </td>
+              <button
+                class="btn btn-danger btn-sm"
+                onclick="MessagesPage.deleteMessage(
+                  '${message.id}',
+                  '${message.tag}'
+                )"
+              >
+                Excluir
+              </button>
 
-      </tr>
-    `;
-  });
-}
+            </div>
+          </td>
 
-async function createMessage(event) {
-  event.preventDefault();
-
-  const institutionId = document.getElementById("institutionSelect").value;
-
-  const tag = document.getElementById("messageTag").value;
-
-  const messageTemplate = document.getElementById("messageTemplate").value;
-
-  if (editingMessageId) {
-    await fetch(`${API_URL}/internal/messages/${editingMessageId}`, {
-      method: "PATCH",
-
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": INTERNAL_API_KEY,
-      },
-
-      body: JSON.stringify({
-        tag,
-        message_template: messageTemplate,
-      }),
-    });
-  } else {
-    await fetch(`${API_URL}/internal/institutions/${institutionId}/messages`, {
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": INTERNAL_API_KEY,
-      },
-
-      body: JSON.stringify({
-        tag,
-        message_template: messageTemplate,
-      }),
+        </tr>
+      `;
     });
   }
 
-  resetMessageForm();
+  async function createMessage(event) {
+    event.preventDefault();
 
-  loadMessages();
-}
+    const institutionId = document.getElementById("institutionSelect").value;
 
-function deleteMessage(messageId, tag) {
-  deletingMessageId = messageId;
+    const tag = document.getElementById("messageTag").value;
 
-  document.getElementById("deleteConfirmationText").innerHTML =
-    `Tem certeza que deseja excluir o template de <strong>${TAG_LABELS[tag]}</strong>?`;
+    const messageTemplate = document.getElementById("messageTemplate").value;
 
-  document.getElementById("deleteConfirmation").classList.remove("d-none");
-}
+    if (editingMessageId) {
+      await fetch(`${API_URL}/internal/messages/${editingMessageId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": INTERNAL_API_KEY,
+        },
+        body: JSON.stringify({
+          tag,
+          message_template: messageTemplate,
+        }),
+      });
+    } else {
+      await fetch(
+        `${API_URL}/internal/institutions/${institutionId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-Key": INTERNAL_API_KEY,
+          },
+          body: JSON.stringify({
+            tag,
+            message_template: messageTemplate,
+          }),
+        },
+      );
+    }
 
-async function confirmDeleteMessage() {
-  if (!deletingMessageId) {
-    return;
+    resetMessageForm();
+
+    await loadMessages();
   }
 
-  await fetch(`${API_URL}/internal/messages/${deletingMessageId}`, {
-    method: "DELETE",
+  function deleteMessage(messageId, tag) {
+    deletingMessageId = messageId;
 
-    headers: {
-      "X-API-Key": INTERNAL_API_KEY,
-    },
-  });
+    document.getElementById("deleteConfirmationText").innerHTML =
+      `Tem certeza que deseja excluir o template de <strong>${TAG_LABELS[tag]}</strong>?`;
 
-  deletingMessageId = null;
+    document.getElementById("deleteConfirmation").classList.remove("d-none");
+  }
 
-  document.getElementById("deleteConfirmation").classList.add("d-none");
+  async function confirmDeleteMessage() {
+    if (!deletingMessageId) return;
 
-  loadMessages();
-}
+    await fetch(`${API_URL}/internal/messages/${deletingMessageId}`, {
+      method: "DELETE",
+      headers: {
+        "X-API-Key": INTERNAL_API_KEY,
+      },
+    });
 
-function cancelDeleteMessage() {
-  deletingMessageId = null;
+    deletingMessageId = null;
 
-  document.getElementById("deleteConfirmation").classList.add("d-none");
-}
+    document.getElementById("deleteConfirmation").classList.add("d-none");
 
-function editMessage(messageId, currentTag, currentTemplate) {
-  editingMessageId = messageId;
+    await loadMessages();
+  }
 
-  document.getElementById("formTitle").textContent = "Editar Template";
+  function cancelDeleteMessage() {
+    deletingMessageId = null;
 
-  document.getElementById("messageTag").value = currentTag;
+    document.getElementById("deleteConfirmation").classList.add("d-none");
+  }
 
-  document.getElementById("messageTemplate").value = currentTemplate;
+  function editMessage(messageId, currentTag, currentTemplate) {
+    editingMessageId = messageId;
 
-  document.getElementById("submitMessageButton").textContent =
-    "Salvar Alterações";
+    document.getElementById("formTitle").textContent = "Editar Template";
 
-  document.getElementById("cancelEditButton").classList.remove("d-none");
+    document.getElementById("messageTag").value = currentTag;
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-}
+    document.getElementById("messageTemplate").value = currentTemplate;
 
-function resetMessageForm() {
-  editingMessageId = null;
+    document.getElementById("submitMessageButton").textContent =
+      "Salvar Alterações";
 
-  document.getElementById("formTitle").textContent = "Novo Template";
+    document.getElementById("cancelEditButton").classList.remove("d-none");
+  }
 
-  document.getElementById("messageTag").value = "food";
+  function resetMessageForm() {
+    editingMessageId = null;
 
-  document.getElementById("messageTemplate").value = "";
+    document.getElementById("formTitle").textContent = "Novo Template";
 
-  document.getElementById("submitMessageButton").textContent = "Cadastrar";
+    document.getElementById("messageTag").value = "food";
 
-  document.getElementById("cancelEditButton").classList.add("d-none");
-}
+    document.getElementById("messageTemplate").value = "";
 
-document
-  .getElementById("messageForm")
-  .addEventListener("submit", createMessage);
+    document.getElementById("submitMessageButton").textContent = "Cadastrar";
 
-document
-  .getElementById("institutionSelect")
-  .addEventListener("change", loadMessages);
+    document.getElementById("cancelEditButton").classList.add("d-none");
+  }
 
-document
-  .getElementById("cancelEditButton")
-  .addEventListener("click", resetMessageForm);
+  function initialize() {
+    const form = document.getElementById("messageForm");
 
-document
-  .getElementById("confirmDeleteButton")
-  .addEventListener("click", confirmDeleteMessage);
+    if (!form) return;
 
-document
-  .getElementById("cancelDeleteButton")
-  .addEventListener("click", cancelDeleteMessage);
+    form.onsubmit = createMessage;
 
-loadInstitutions();
+    document.getElementById("institutionSelect").onchange = loadMessages;
+
+    document.getElementById("cancelEditButton").onclick = resetMessageForm;
+
+    document.getElementById("confirmDeleteButton").onclick =
+      confirmDeleteMessage;
+
+    document.getElementById("cancelDeleteButton").onclick = cancelDeleteMessage;
+
+    loadInstitutions();
+  }
+
+  return {
+    initialize,
+    editMessage,
+    deleteMessage,
+  };
+})();

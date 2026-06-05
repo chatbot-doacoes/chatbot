@@ -2,39 +2,27 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <title>WhatsApp Chatbot</title>
+    <title>DoaBot - Painel</title>
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+
+    <link rel="stylesheet" href="assets/css/global.css" />
   </head>
+
   <body>
-    <div class="container mt-5">
-      <h1>Painel Administrativo</h1>
+    <div id="header"></div>
 
-      <div class="list-group mt-4">
-        <a
-          href="pages/institutions.html"
-          class="list-group-item list-group-item-action"
-        >
-          Instituições
-        </a>
+    <div class="app-container">
+      <div id="sidebar"></div>
 
-        <a
-          href="pages/messages.html"
-          class="list-group-item list-group-item-action"
-        >
-          Templates de Mensagens
-        </a>
-
-        <a
-          href="pages/send-messages.html"
-          class="list-group-item list-group-item-action"
-        >
-          Enviar Mensagens
-        </a>
-      </div>
+      <main id="content-area" class="app-content"></main>
     </div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/layout.js"></script>
   </body>
 </html>

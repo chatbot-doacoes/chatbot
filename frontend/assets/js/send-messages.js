@@ -1,125 +1,140 @@
-function addUserRow() {
-  const table = document.getElementById("usersTable");
+window.SendMessagesPage = (() => {
+  function addUserRow() {
+    const table = document.getElementById("usersTable");
 
-  table.innerHTML += `
-    <tr>
+    if (!table) return;
 
-      <td>
-        <input
-          class="form-control user-name"
-          required
-        >
-      </td>
+    table.innerHTML += `
+      <tr>
 
-      <td>
-        <input
-          class="form-control user-phone"
-          required
-        >
-      </td>
+        <td>
+          <input
+            class="form-control user-name"
+            required
+          >
+        </td>
 
-      <td>
+        <td>
+          <input
+            class="form-control user-phone"
+            required
+          >
+        </td>
 
-        <select
-          class="form-select user-tag"
-          required
-        >
+        <td>
 
-          <option value="food">
-            Food
-          </option>
+          <select
+            class="form-select user-tag"
+            required
+          >
 
-          <option value="clothing">
-            Clothing
-          </option>
+            <option value="food">
+              Food
+            </option>
 
-          <option value="diapers">
-            Diapers
-          </option>
+            <option value="clothing">
+              Clothing
+            </option>
 
-        </select>
+            <option value="diapers">
+              Diapers
+            </option>
 
-      </td>
+          </select>
 
-      <td>
+        </td>
 
-        <button
-          type="button"
-          class="btn btn-danger"
-          onclick="this.closest('tr').remove()"
-        >
-          Remover
-        </button>
+        <td>
 
-      </td>
+          <button
+            type="button"
+            class="btn btn-danger"
+            onclick="this.closest('tr').remove()"
+          >
+            Remover
+          </button>
 
-    </tr>
-  `;
-}
+        </td>
 
-async function sendMessages(event) {
-  event.preventDefault();
-
-  const rows = document.querySelectorAll("#usersTable tr");
-
-  const users = [];
-
-  rows.forEach((row) => {
-    users.push({
-      user_name: row.querySelector(".user-name").value,
-
-      user_phone: row.querySelector(".user-phone").value,
-
-      tag: row.querySelector(".user-tag").value,
-    });
-  });
-
-  const response = await fetch(`${API_URL}/api/v1/messages`, {
-    method: "POST",
-
-    headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": EXTERNAL_API_KEY,
-    },
-
-    body: JSON.stringify({
-      send_to: users,
-    }),
-  });
-
-  const data = await response.json();
-
-  renderResult(data);
-}
-
-function renderResult(data) {
-  const result = document.getElementById("result");
-
-  if (data.invalid_users && data.invalid_users.length > 0) {
-    result.innerHTML = `
-      <div class="alert alert-warning">
-
-        <h5>Usuários inválidos</h5>
-
-        <pre>
-${JSON.stringify(data.invalid_users, null, 2)}
-        </pre>
-
-      </div>
+      </tr>
     `;
-
-    return;
   }
 
-  result.innerHTML = `
-    <div class="alert alert-success">
-      ${data.message}
-    </div>
-  `;
-}
+  async function sendMessages(event) {
+    event.preventDefault();
 
-addUserRow();
+    const rows = document.querySelectorAll("#usersTable tr");
 
-document
-  .getElementById("sendMessagesForm")
-  .addEventListener("submit", sendMessages);
+    const users = [];
+
+    rows.forEach((row) => {
+      users.push({
+        user_name: row.querySelector(".user-name").value,
+        user_phone: row.querySelector(".user-phone").value,
+        tag: row.querySelector(".user-tag").value,
+      });
+    });
+
+    const response = await fetch(`${API_URL}/api/v1/messages`, {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": EXTERNAL_API_KEY,
+      },
+
+      body: JSON.stringify({
+        send_to: users,
+      }),
+    });
+
+    const data = await response.json();
+
+    renderResult(data);
+  }
+
+  function renderResult(data) {
+    const result = document.getElementById("result");
+
+    if (!result) return;
+
+    if (data.invalid_users?.length > 0) {
+      result.innerHTML = `
+        <div class="alert alert-warning">
+
+          <h5>Usuários inválidos</h5>
+
+          <pre>${JSON.stringify(data.invalid_users, null, 2)}</pre>
+
+        </div>
+      `;
+
+      return;
+    }
+
+    result.innerHTML = `
+      <div class="alert alert-success">
+        ${data.message}
+      </div>
+    `;
+  }
+
+  function initialize() {
+    const form = document.getElementById("sendMessagesForm");
+
+    if (!form) return;
+
+    form.onsubmit = sendMessages;
+
+    const table = document.getElementById("usersTable");
+
+    if (table && table.children.length === 0) {
+      addUserRow();
+    }
+  }
+
+  return {
+    initialize,
+    addUserRow,
+  };
+})();
