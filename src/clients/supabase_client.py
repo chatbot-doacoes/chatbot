@@ -109,7 +109,8 @@ class Supabase:
                 self.client.table(MessageModel.TABLE_NAME)
                 .select(
                     MessageModel.Cols.tag,
-                    MessageModel.Cols.message_template
+                    MessageModel.Cols.message_template,
+                    MessageModel.Cols.donation_url
                 )
                 .eq(MessageModel.Cols.institution_id, institution_id)
                 .execute()

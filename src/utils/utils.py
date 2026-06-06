@@ -22,7 +22,10 @@ def format_message_templates(message_templates: list[dict[str, str]]) -> dict[st
         tag = message_template[MessageModel.Cols.tag]
         if tag not in formatted_messages:
             formatted_messages[tag] = []
-        formatted_messages[tag].append(message_template[MessageModel.Cols.message_template])
+        formatted_messages[tag].append({
+            "message_template": message_template[MessageModel.Cols.message_template],
+            "donation_url": message_template[MessageModel.Cols.donation_url],
+        })
     return formatted_messages
 
 def check_password(password: str, password_hash: str) -> bool:
