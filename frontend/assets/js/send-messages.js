@@ -1,4 +1,10 @@
 window.SendMessagesPage = (() => {
+  const TAG_LABELS = {
+    food: "Alimentos",
+    clothing: "Roupas",
+    diapers: "Fraldas",
+  };
+
   function addUserRow() {
     const table = document.getElementById("usersTable");
 
@@ -17,6 +23,8 @@ window.SendMessagesPage = (() => {
         <td>
           <input
             class="form-control user-phone"
+            placeholder="Ex: (DD)0000-0000"
+            maxlength="13"
             required
           >
         </td>
@@ -29,15 +37,15 @@ window.SendMessagesPage = (() => {
           >
 
             <option value="food">
-              Food
+              ${TAG_LABELS.food}
             </option>
 
             <option value="clothing">
-              Clothing
+              ${TAG_LABELS.clothing}
             </option>
 
             <option value="diapers">
-              Diapers
+              ${TAG_LABELS.diapers}
             </option>
 
           </select>
@@ -58,6 +66,12 @@ window.SendMessagesPage = (() => {
 
       </tr>
     `;
+
+    const lastPhoneInput = table.querySelector("tr:last-child .user-phone");
+
+    lastPhoneInput.addEventListener("input", (event) => {
+      event.target.value = formatPhone(event.target.value);
+    });
   }
 
   async function sendMessages(event) {
@@ -70,10 +84,37 @@ window.SendMessagesPage = (() => {
     rows.forEach((row) => {
       users.push({
         user_name: row.querySelector(".user-name").value,
-        user_phone: row.querySelector(".user-phone").value,
+        user_phone: row.querySelector(".user-phone").value.replace(/\D/g, ""),
         tag: row.querySelector(".user-tag").value,
       });
     });
+
+    const result = document.getElementById("result");
+
+    for (const row of rows) {
+      const phone = row.querySelector(".user-phone").value.replace(/\D/g, "");
+
+      if (phone.length !== 10) {
+        result.innerHTML = `
+      <div class="alert alert-danger">
+        O telefone deve conter exatamente 10 dígitos.
+      </div>
+    `;
+
+        return;
+      }
+    }
+
+    const sendButton = document.getElementById("sendButton");
+
+    sendButton.disabled = true;
+
+    sendButton.innerHTML = `
+      <span class="spinner-border spinner-border-sm me-2"></span>
+      Enviando...
+    `;
+
+    result.innerHTML = "";
 
     const response = await fetch(`${API_URL}/api/v1/messages`, {
       method: "POST",
@@ -89,6 +130,8 @@ window.SendMessagesPage = (() => {
     });
 
     const data = await response.json();
+    sendButton.disabled = false;
+    sendButton.textContent = "Enviar Mensagens";
 
     renderResult(data);
   }
@@ -100,23 +143,33 @@ window.SendMessagesPage = (() => {
 
     if (data.invalid_users?.length > 0) {
       result.innerHTML = `
-        <div class="alert alert-warning">
-
-          <h5>Usuários inválidos</h5>
-
-          <pre>${JSON.stringify(data.invalid_users, null, 2)}</pre>
-
-        </div>
-      `;
+      <div class="alert alert-danger">
+        Um ou mais destinatários possuem dados inválidos.
+      </div>
+    `;
 
       return;
     }
 
     result.innerHTML = `
-      <div class="alert alert-success">
-        ${data.message}
-      </div>
-    `;
+    <div class="alert alert-success">
+      Mensagens enviadas com sucesso!
+    </div>
+  `;
+  }
+
+  function formatPhone(value) {
+    const digits = value.replace(/\D/g, "").slice(0, 10);
+
+    if (digits.length <= 2) {
+      return digits;
+    }
+
+    if (digits.length <= 6) {
+      return `(${digits.slice(0, 2)})${digits.slice(2)}`;
+    }
+
+    return `(${digits.slice(0, 2)})${digits.slice(2, 6)}-${digits.slice(6)}`;
   }
 
   function initialize() {

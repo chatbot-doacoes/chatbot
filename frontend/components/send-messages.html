@@ -3,32 +3,54 @@
 </div>
 
 <div class="form-section">
-  <form id="sendMessagesForm">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Telefone</th>
-          <th>Tag</th>
-          <th></th>
-        </tr>
-      </thead>
+  <div class="alert alert-info mb-4">
+    <strong>Orientações:</strong>
 
-      <tbody id="usersTable"></tbody>
-    </table>
+    <ul class="mb-0 mt-2">
+      <li><strong>Nome:</strong> nome do doador que receberá a mensagem.</li>
 
-    <button
-      type="button"
-      class="btn btn-secondary"
-      onclick="SendMessagesPage.addUserRow()"
-    >
-      + Adicionar Destinatário
-    </button>
+      <li>
+        <strong>Telefone:</strong> número de 10 dígitos do doador (ex.: (51)
+        0000-0000).
+      </li>
 
-    <button type="submit" class="btn btn-success">Enviar Mensagens</button>
-  </form>
+      <li>
+        <strong>Tag:</strong> indica o tipo de campanha e define qual template
+        de mensagem será enviado.
+      </li>
+    </ul>
+  </div>
 
-  <hr />
+  <div class="form-section">
+    <form id="sendMessagesForm">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Tag</th>
+            <th></th>
+          </tr>
+        </thead>
 
-  <div id="result"></div>
+        <tbody id="usersTable"></tbody>
+      </table>
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="SendMessagesPage.addUserRow()"
+      >
+        + Adicionar Destinatário
+      </button>
+
+      <button id="sendButton" type="submit" class="btn btn-success">
+        Enviar Mensagens
+      </button>
+    </form>
+
+    <hr />
+
+    <div id="result"></div>
+  </div>
 </div>
