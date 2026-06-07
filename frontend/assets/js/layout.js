@@ -1,3 +1,7 @@
+if (!localStorage.getItem("loggedUser")) {
+  window.location.href = "/pages/login.html";
+}
+
 async function loadComponent(id, file) {
   const response = await fetch(file);
   const html = await response.text();
@@ -46,6 +50,10 @@ async function loadPage(page) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadComponent("header", "/components/header.html");
+
+  await import("/assets/js/header.js");
+  window.Header.initialize();
+
   await loadComponent("sidebar", "/components/sidebar.html");
 
   document.addEventListener("click", (event) => {

@@ -28,6 +28,8 @@ function login() {
         if (response.ok) {
           const data = await response.json();
 
+          localStorage.setItem("loggedUser", data.username ?? usernameInput);
+
           messageDiv.className = "alert alert-success mt-3";
           messageDiv.textContent = "Login efetuado com sucesso!";
           messageDiv.classList.remove("d-none");
