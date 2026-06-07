@@ -10,7 +10,9 @@ window.SendMessagesPage = (() => {
 
     if (!table) return;
 
-    table.innerHTML += `
+    table.insertAdjacentHTML(
+      "beforeend",
+      `
       <tr>
 
         <td>
@@ -65,7 +67,8 @@ window.SendMessagesPage = (() => {
         </td>
 
       </tr>
-    `;
+    `,
+    );
 
     const lastPhoneInput = table.querySelector("tr:last-child .user-phone");
 

@@ -131,7 +131,8 @@ def update_message(
     supabase_client = Supabase(request.state.logger)
 
     update_data = payload.model_dump(
-        exclude_none=True
+        exclude_none=True,
+        mode="json"
     )
 
     if not update_data:
