@@ -96,8 +96,8 @@ class Supabase:
             self.logger.add_step(f"Failed to get institution id by key_hash.")
             return None
 
-    def get_messages_templates(self, key_hash: str) -> list[dict[str, str]]:
-        institution_id = self.get_institution_id_by_key_hash(key_hash)
+    def get_messages_templates(self) -> list[dict[str, str]]:
+        institution_id = "34d4ea5c-abd6-4f61-9210-cfded69a88f3"
         if institution_id is None:
             return []
 

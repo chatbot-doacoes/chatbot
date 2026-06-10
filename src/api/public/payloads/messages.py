@@ -10,6 +10,9 @@ class User(BaseModel):
     user_name: str = Field(min_length=1, max_length=256)
     user_phone: str = Field(min_length=11, max_length=11)
     tag: MessageTag
+    institution: str
+    amount: float
+    birthdate: str
 
     @field_validator("user_phone")
     @classmethod

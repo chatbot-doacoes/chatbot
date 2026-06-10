@@ -19,14 +19,13 @@ def send_messages(
         request: Request
 ) -> JSONResponse:
     valid_users, invalid_users = payload.split_users()
-    api_key = request.headers["X-API-Key"]
 
     logger = request.state.logger
 
     supabase_client = Supabase(logger)
     twilio_client = Twilio(logger)
 
-    messages_templates = supabase_client.get_messages_templates(key_hash=hash_api_key(api_key))
+    messages_templates = supabase_client.get_messages_templates()
     formatted_messages = format_message_templates(messages_templates)
 
     successful_users: list[User] = []
