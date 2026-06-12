@@ -8,7 +8,7 @@ from src.api.enum.responses_enum import ResponsesEnum
 
 class User(BaseModel):
     user_name: str = Field(min_length=1, max_length=256)
-    user_phone: str = Field(min_length=11, max_length=11)
+    user_phone: str = Field(min_length=10, max_length=11)
     tag: MessageTag
 
     @field_validator("user_phone")

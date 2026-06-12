@@ -1,0 +1,253 @@
+:root {
+  --green-primary: #2e7d32;
+  --green-light: #ccf1cf;
+  --green-dark: #1b5e20;
+}
+
+body {
+  background: #f5f7f6;
+}
+
+@font-face {
+  font-family: "Hey August";
+  src: url("../fonts/HeyAugust.otf") format("opentype");
+}
+
+/* HEADER */
+.app-header {
+  background: var(--green-primary);
+  color: white;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* esquerda */
+.app-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* título DoaBot */
+.app-title {
+  font-family: "Hey August", cursive;
+  font-size: 1.6rem;
+  color: white;
+}
+
+/* direita */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-title {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* SIDEBAR */
+.app-sidebar {
+  width: 260px;
+  background: white;
+  height: calc(100vh - 64px);
+  border-right: 1px solid #eaeaea;
+  padding: 20px 10px;
+}
+
+.sidebar-item {
+  display: block;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #333;
+  text-decoration: none;
+  margin-bottom: 8px;
+  transition: 0.2s;
+}
+
+.sidebar-item:hover {
+  background: var(--green-light);
+  color: var(--green-dark);
+}
+
+.sidebar-item.active {
+  background: var(--green-primary);
+  color: white;
+}
+
+/* LAYOUT */
+.app-container {
+  display: flex;
+}
+
+.app-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  height: calc(100vh - 64px);
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  font-weight: 600;
+  color: var(--green-dark);
+}
+
+.dashboard-card {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition: 0.2s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+}
+
+.card {
+  border-radius: 14px;
+}
+
+.table {
+  background: white;
+}
+
+.form-section {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  color: var(--green-dark);
+  margin-bottom: 20px;
+}
+
+.profile-container {
+  position: relative;
+  margin-left: 20px;
+}
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 8px 14px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.12);
+
+  color: white;
+
+  font-size: 0.95rem;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.profile-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.profile-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.profile-menu {
+  position: absolute;
+
+  top: calc(100% + 10px);
+  right: 0;
+
+  min-width: 220px;
+
+  background: white;
+
+  border-radius: 12px;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  padding: 16px;
+
+  z-index: 1000;
+}
+
+.profile-info {
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.profile-info strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--green-dark);
+}
+
+.logout-button {
+  width: 100%;
+
+  border: none;
+  border-radius: 8px;
+
+  padding: 10px;
+
+  background: #dc3545;
+  color: white;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.logout-button:hover {
+  background: #bb2d3b;
+}
+
+.profile-arrow {
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+.profile-button:hover .profile-arrow {
+  transform: translateY(1px);
+}
+
+.profile-button.open .profile-arrow {
+  transform: rotate(180deg);
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .app-sidebar {
+    width: 100%;
+    height: auto;
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+  }
+
+  .app-container {
+    flex-direction: column;
+  }
+}
