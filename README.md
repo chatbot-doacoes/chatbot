@@ -374,6 +374,92 @@ As chaves são armazenadas no banco através de hashes, evitando exposição dir
 
 ---
 
+# Frontend de Demonstração
+
+O DoaBot possui uma interface administrativa desenvolvida exclusivamente para demonstração e validação das funcionalidades da API.
+
+Essa interface não representa o produto final da solução, mas permite visualizar e testar os principais fluxos implementados no backend sem a necessidade de utilizar ferramentas como Postman ou Swagger.
+
+As telas foram desenvolvidas utilizando HTML, CSS, JavaScript e Bootstrap.
+
+---
+
+## Tela de Login
+
+Responsável pela autenticação do usuário administrador.
+
+Nessa tela, o usuário informa suas credenciais para acessar as funcionalidades administrativas da aplicação.
+
+![Tela de Login](docs/images/login.png)
+
+---
+
+## Dashboard Inicial
+
+Apresenta uma visão geral do projeto e fornece informações sobre o funcionamento do chatbot.
+
+Essa tela tem como objetivo contextualizar o usuário sobre a solução antes da utilização das demais funcionalidades.
+
+![Dashboard](docs/images/dashboard.png)
+
+---
+
+## Gerenciamento de Instituições
+
+Permite cadastrar, editar, visualizar e remover instituições.
+
+As instituições cadastradas recebem uma chave de acesso utilizada para autenticação nas requisições da API.
+
+![Instituições](docs/images/institutions.png)
+
+---
+
+## Gerenciamento de Templates
+
+Permite criar e manter os templates de mensagens utilizados nas campanhas.
+
+Cada template pode ser associado a:
+
+- Alimentos;
+- Roupas;
+- Fraldas;
+
+Também é possível cadastrar uma URL de doação para ser enviada juntamente com a mensagem.
+
+![Templates](docs/images/messages.png)
+
+---
+
+## Envio de Campanhas
+
+Tela utilizada para simular o envio de campanhas de arrecadação.
+
+Nela é possível:
+
+- Informar o nome do destinatário;
+- Informar o telefone;
+- Selecionar a categoria da campanha;
+- Disparar mensagens utilizando os templates cadastrados.
+
+Durante o envio, a interface apresenta feedback visual de carregamento e exibe mensagens de sucesso ou erro ao usuário.
+
+![Envio de Mensagens](docs/images/send-messages.png)
+
+---
+
+## Objetivo da Interface
+
+A interface administrativa foi criada para:
+
+- Demonstrar as funcionalidades da API;
+- Validar os endpoints durante o desenvolvimento;
+- Facilitar testes sem necessidade de ferramentas externas;
+- Servir como apoio para apresentações do projeto.
+
+Em ambientes de produção, espera-se que sistemas externos consumam diretamente os endpoints disponibilizados pela API.
+
+---
+
 # Estrutura do Projeto
 
 ```text
@@ -481,6 +567,166 @@ Como ela não faz parte do produto final planejado, optou-se por manter:
 - `dev` contendo a API e a interface de demonstração.
 
 Dessa forma, é possível evoluir e demonstrar o sistema sem impactar a versão principal do backend.
+
+---
+
+# Custos Operacionais
+
+O DoaBot utiliza a infraestrutura da Twilio integrada à WhatsApp Business API para realizar o envio das mensagens aos doadores.
+
+Os custos operacionais estão divididos entre:
+
+- Aquisição e manutenção do número WhatsApp Business;
+- Tarifação da Twilio por mensagem enviada;
+- Tarifação da Meta (WhatsApp Business Platform) por conversa de marketing iniciada.
+
+## Custos de Integração
+
+### Número WhatsApp Business
+
+Para utilização em ambiente de produção é necessário:
+
+- Possuir um número telefônico válido;
+- Vincular o número a uma conta WhatsApp Business;
+- Realizar a verificação da empresa na Meta;
+- Aprovar os templates de mensagens utilizados.
+
+O custo do número depende do país, operadora e fornecedor escolhido.
+
+Em média:
+
+| Item                   | Valor aproximado        |
+| ---------------------- | ----------------------- |
+| Número telefônico      | US$ 1,00 a US$ 5,00/mês |
+| Verificação Meta       | Gratuita                |
+| Aprovação de templates | Gratuita                |
+
+---
+
+## Custos por Mensagem
+
+Atualmente considera-se:
+
+| Serviço                       | Valor                  |
+| ----------------------------- | ---------------------- |
+| Twilio                        | US$ 0,005 por mensagem |
+| WhatsApp Business (Marketing) | US$ 0,070 por conversa |
+| Total estimado por envio      | US$ 0,075              |
+
+### Fórmula
+
+Custo mensal estimado:
+
+```text
+Custo = Número de mensagens × US$ 0,075
+```
+
+---
+
+## Simulações de Uso
+
+### 100 doadores por mês
+
+| Item               | Valor    |
+| ------------------ | -------- |
+| Mensagens enviadas | 100      |
+| Custo Twilio       | US$ 0,50 |
+| Custo WhatsApp     | US$ 7,00 |
+| Total              | US$ 7,50 |
+
+---
+
+### 500 doadores por mês
+
+| Item               | Valor     |
+| ------------------ | --------- |
+| Mensagens enviadas | 500       |
+| Custo Twilio       | US$ 2,50  |
+| Custo WhatsApp     | US$ 35,00 |
+| Total              | US$ 37,50 |
+
+---
+
+### 1.000 doadores por mês
+
+| Item               | Valor     |
+| ------------------ | --------- |
+| Mensagens enviadas | 1.000     |
+| Custo Twilio       | US$ 5,00  |
+| Custo WhatsApp     | US$ 70,00 |
+| Total              | US$ 75,00 |
+
+---
+
+## Estimativa de Investimento Inicial
+
+Para disponibilizar o sistema em produção, estima-se:
+
+| Item                     | Valor aproximado |
+| ------------------------ | ---------------- |
+| Número WhatsApp Business | R$ 5 a R$ 25/mês |
+| Primeiros 1.000 envios   | R$ 389,00        |
+| Total inicial estimado   | R$ 400,00        |
+
+---
+
+## Observações
+
+Os valores apresentados são estimativas baseadas nas tarifas vigentes durante o desenvolvimento do projeto.
+
+A Meta e a Twilio podem alterar seus preços ao longo do tempo, além de existirem diferenças de tarifação entre países e categorias de conversa.
+
+Recomenda-se consultar periodicamente a documentação oficial da Twilio e da WhatsApp Business Platform para obtenção dos valores atualizados.
+
+Além disso, os cálculos apresentados consideram um cenário conservador, onde cada doador gera uma nova conversa de marketing. Caso múltiplas mensagens sejam enviadas dentro da mesma janela de conversa do WhatsApp, o custo efetivo por doador poderá ser menor.
+
+---
+
+# Limitações do Projeto
+
+Durante o desenvolvimento do DoaBot, algumas limitações foram identificadas e devem ser consideradas ao avaliar os resultados obtidos neste MVP.
+
+## Integração com Sistemas Externos
+
+Embora a API tenha sido projetada para receber requisições de serviços externos responsáveis pelo gerenciamento de campanhas e doadores, não houve oportunidade de validar essa integração em um ambiente real.
+
+Todos os testes realizados utilizaram a interface administrativa de demonstração desenvolvida para o projeto, simulando as chamadas que seriam feitas por aplicações externas.
+
+Dessa forma, a integração com sistemas de terceiros permanece como uma etapa futura de validação.
+
+## Utilização do Twilio Sandbox
+
+O envio de mensagens foi realizado exclusivamente utilizando o ambiente de testes (Sandbox) da Twilio para WhatsApp.
+
+Essa abordagem permitiu validar:
+
+- O fluxo de envio das mensagens;
+- A personalização dos templates;
+- A integração entre a API e os serviços da Twilio.
+
+Entretanto, o Sandbox possui restrições importantes:
+
+- Os destinatários precisam ingressar manualmente no ambiente de testes;
+- As mensagens são enviadas através de um número pertencente à Twilio;
+- Não é possível personalizar totalmente a identidade da conta;
+- O ambiente não representa integralmente as condições de produção.
+
+## Ausência de Número Oficial WhatsApp Business
+
+Não foi realizado investimento financeiro para aquisição e configuração de um número oficial do WhatsApp Business.
+
+Consequentemente, não foram executadas as etapas necessárias para:
+
+- Vinculação de um número próprio;
+- Verificação da empresa junto à Meta;
+- Aprovação de templates oficiais de marketing;
+- Validação do comportamento do sistema em ambiente de produção.
+
+## Custos Operacionais Não Validados
+
+As estimativas de custos apresentadas neste documento foram calculadas com base nas tabelas públicas de preços da Twilio e da Meta.
+
+Como o sistema não foi utilizado em ambiente produtivo, não houve geração de custos reais de envio, impossibilitando a validação prática dos valores estimados.
 
 ---
 
