@@ -1,31 +1,33 @@
 import random
 from typing import Any
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from starlette.responses import JSONResponse
 
 from src.api.enum.responses_enum import ResponsesEnum
 from src.api.public.payloads.messages import SendMessages, User
 from src.api.public.responses.messages import MessagesResponse
-from src.clients.supabase_client import Supabase
+from src.services.message_service import MessageService
+from src.api.dependencies.core import get_message_service
 from src.clients.twilio_client import Twilio
-from src.utils.utils import hash_api_key, format_message_templates, api_response
+from src.utils.utils import format_message_templates, api_response
 
 router = APIRouter()
 
 @router.post("/messages", response_model=MessagesResponse)
 def send_messages(
         payload: SendMessages,
-        request: Request
+        request: Request,
+        message_service: MessageService = Depends(get_message_service)
 ) -> JSONResponse:
     valid_users, invalid_users = payload.split_users()
 
     logger = request.state.logger
 
-    supabase_client = Supabase(logger)
     twilio_client = Twilio(logger)
 
-    messages_templates = supabase_client.get_messages_templates()
+    institution_id = "34d4ea5c-abd6-4f61-9210-cfded69a88f3" 
+    messages_templates = message_service.get_messages_templates(institution_id)
     formatted_messages = format_message_templates(messages_templates)
 
     successful_users: list[User] = []

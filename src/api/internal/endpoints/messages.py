@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from uuid import UUID
 
 from starlette.responses import JSONResponse
@@ -9,23 +9,21 @@ from src.api.exceptions import APIException
 from src.api.internal.responses.messages import GetAllMessagesResponse
 from src.api.internal.payloads.messages import RegisterMessage
 from src.utils.utils import api_response
-from src.clients.supabase_client import Supabase
-from src.models.message import MessageModel
+from src.services.message_service import MessageService
+from src.api.dependencies.core import get_message_service
 
 router = APIRouter()
 
 @router.post("/institutions/{institution_id}/messages")
-def post_message(institution_id: UUID, payload: RegisterMessage, request: Request) -> JSONResponse:
-    supabase_client = Supabase(request.state.logger)
-
-    message_model = MessageModel(
-        institution_id=institution_id,
-        tag=payload.tag,
-        message_template=payload.message_template
-    )
-
+def post_message(
+    institution_id: UUID, 
+    payload: RegisterMessage, 
+    request: Request,
+    message_service: MessageService = Depends(get_message_service)
+) -> JSONResponse:
+    
     try:
-        success = supabase_client.register_message(message_model)
+        success = message_service.register_message(institution_id, payload)
         if not success:
             raise Exception("Failed to register message in database.")
     except Exception as e:
@@ -55,11 +53,13 @@ def post_message(institution_id: UUID, payload: RegisterMessage, request: Reques
                     "description": ResponsesEnum.FAILED_TO_FETCH_MESSAGES.message,
                 }
             })
-def get_messages(institution_id: UUID, request: Request) -> JSONResponse:
-    supabase_client = Supabase(request.state.logger)
-
+def get_messages(
+    institution_id: UUID, 
+    request: Request,
+    message_service: MessageService = Depends(get_message_service)
+) -> JSONResponse:
     try:
-        messages = supabase_client.get_messages_by_institution(institution_id)
+        messages = message_service.get_messages_by_institution(institution_id)
     except Exception as e:
         request.state.logger.add_step(f"Failed to get messages: {str(e)}")
         raise APIException(

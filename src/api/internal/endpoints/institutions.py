@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Request, Depends
 from starlette.responses import JSONResponse
 
-from src.models.institution import InstitutionModel
 from src.api.base_response import BaseResponse
 from src.api.enum.responses_enum import ResponsesEnum
 from src.api.exceptions import APIException
 from src.api.internal.responses.institutions import GetAllInstitutionsResponse, UpdateInstitutionResponse
 from src.api.internal.payloads.institutions import RegisterInstitution, UpdateInstitution
-from src.clients.supabase_client import Supabase
+from src.services.institution_service import InstitutionService
+from src.api.dependencies.core import get_institution_service
 from uuid import UUID
 
 from src.utils.utils import api_response
@@ -48,27 +48,17 @@ router = APIRouter()
 )
 def register_institution(
     payload: RegisterInstitution,
-    request: Request
+    request: Request,
+    institution_service: InstitutionService = Depends(get_institution_service)
 ) -> JSONResponse:
 
     logger = request.state.logger
 
     logger.add_step("Starting institution registration")
 
-    supabase_client = Supabase(logger)
-
-    institution = InstitutionModel(
-        institution_name=payload.institution_name,
-        key_hash=payload.key_hash,
-        is_active=True,
-    )
-
-    institution_created = supabase_client.register_institution(
-        institution
-    )
+    institution_created = institution_service.register_institution(payload)
 
     if not institution_created:
-
         raise APIException(
             status_code=ResponsesEnum.FAILED_TO_CREATE_INSTITUTION.status_code,
             message=ResponsesEnum.FAILED_TO_CREATE_INSTITUTION.message
@@ -91,49 +81,18 @@ def register_institution(
                 ResponsesEnum.INSTITUTIONS_FETCHED.status_code: {
                     "model": GetAllInstitutionsResponse,
                     "description": ResponsesEnum.INSTITUTIONS_FETCHED.message,
-                    "content": {
-                        "application/json": {
-                            "example": {
-                                "status_code": ResponsesEnum.INSTITUTIONS_FETCHED.status_code,
-                                "message": ResponsesEnum.INSTITUTIONS_FETCHED.message,
-                                "institutions": [
-                                    {
-                                        "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-                                        "institution_name": "Institution 1",
-                                        "is_active": True,
-                                        "created_at": "2023-10-27T10:00:00Z",
-                                        "update_at": "2023-10-27T10:00:00Z"
-                                    },
-                                    {
-                                        "id": "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
-                                        "institution_name": "Institution 2",
-                                        "is_active": False,
-                                        "created_at": "2023-10-26T12:30:00Z",
-                                        "update_at": "2023-10-26T12:30:00Z"
-                                    }
-                                ]
-                            }
-                        }
-                    }
                 },
                 ResponsesEnum.FAILED_TO_FETCH_INSTITUTIONS.status_code: {
                     "model": BaseResponse,
                     "description": ResponsesEnum.FAILED_TO_FETCH_INSTITUTIONS.message,
-                    "content": {
-                        "application/json": {
-                            "example": {
-                                "status_code": ResponsesEnum.FAILED_TO_FETCH_INSTITUTIONS.status_code,
-                                "message": ResponsesEnum.FAILED_TO_FETCH_INSTITUTIONS.message
-                            }
-                        }
-                    }
                 }
             })
-def get_institutions(request: Request) -> JSONResponse:
-    supabase_client = Supabase(request.state.logger)
-
+def get_institutions(
+    request: Request,
+    institution_service: InstitutionService = Depends(get_institution_service)
+) -> JSONResponse:
     try:
-        institutions = supabase_client.get_institutions()
+        institutions = institution_service.get_all_institutions()
     except Exception as e:
         request.state.logger.add_step(f"Failed to get institutions: {str(e)}")
         raise APIException(
@@ -157,55 +116,23 @@ def get_institutions(request: Request) -> JSONResponse:
         ResponsesEnum.INSTITUTION_UPDATED.status_code: {
             "model": UpdateInstitutionResponse,
             "description": ResponsesEnum.INSTITUTION_UPDATED.message,
-            "content": {
-                "application/json": {
-                    "example": {
-                        "status_code": ResponsesEnum.INSTITUTION_UPDATED.status_code,
-                        "message": ResponsesEnum.INSTITUTION_UPDATED.message,
-                        "institution": {
-                            "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-                            "institution_name": "Updated Institution",
-                            "is_active": True,
-                            "created_at": "2023-10-27T10:00:00Z",
-                            "update_at": "2023-10-28T14:30:00Z"
-                        }
-                    }
-                }
-            }
         },
         ResponsesEnum.NO_FIELDS_TO_UPDATE.status_code: {
             "model": BaseResponse,
             "description": ResponsesEnum.NO_FIELDS_TO_UPDATE.message,
-            "content": {
-                "application/json": {
-                    "example": {
-                        "status_code": ResponsesEnum.NO_FIELDS_TO_UPDATE.status_code,
-                        "message": ResponsesEnum.NO_FIELDS_TO_UPDATE.message
-                    }
-                }
-            }
         },
         ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.status_code: {
             "model": BaseResponse,
             "description": ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.message,
-            "content": {
-                "application/json": {
-                    "example": {
-                        "status_code": ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.status_code,
-                        "message": ResponsesEnum.FAILED_TO_UPDATE_INSTITUTION.message
-                    }
-                }
-            }
         }
     }
 )
 def update_institution(
     institution_id: UUID,
     payload: UpdateInstitution,
-    request: Request
+    request: Request,
+    institution_service: InstitutionService = Depends(get_institution_service)
 ) -> JSONResponse:
-
-    supabase_client = Supabase(request.state.logger)
 
     update_data = payload.model_dump(exclude_none=True)
 
@@ -216,10 +143,7 @@ def update_institution(
         )
 
     try:
-        institution = supabase_client.update_institution(
-            institution_id=str(institution_id),
-            data=update_data
-        )
+        institution = institution_service.update_institution(str(institution_id), update_data)
     except Exception as e:
         request.state.logger.add_step(
             f"Failed to update institution: {str(e)}"
@@ -237,4 +161,3 @@ def update_institution(
             message=ResponsesEnum.INSTITUTION_UPDATED.message,
             institution=institution
     ))
-
